@@ -692,6 +692,9 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('/microactivityworksDelete/{id}', 'ActivityGroups\MicroWorksController@microactivityworksDelete');
          Route::post('/microactivityworksUpdate', 'ActivityGroups\MicroWorksController@microactivityworksUpdate');
 
+         Route::get('/subactivityworksList','ActivityGroups\MicroWorksController@subactivityworksList');
+
+
        
 
 

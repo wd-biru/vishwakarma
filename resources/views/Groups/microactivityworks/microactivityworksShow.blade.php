@@ -11,13 +11,16 @@
 <body>
 
 <div class="container">
+  
 <h3><a href="{{URL('/microactivityworks')}}">Insert Micro Activity Works</a></h3>
       <table border="1">
          <tr>
             <th>Id </th>
             <th>Portal Id</th>
             <th>Activity Group Id</th>
+            <th>sub_activity_works_id </th>
             <th>Micro Activity Work </th>
+
             <th>Action </th>
          </tr>
 
@@ -26,6 +29,7 @@
             <td>{{$users['id']}} </td>
             <td>{{$users['portal_id']}}</td>
             <td>{{$users['activity_group_id']}}</td>
+            <td>{{$users['sub_activity_works_id']}} </td>
             <td>{{$users['micro_activity_work']}}</td>
             <td>
                 <a href="{{URL('microactivityworksEdit',base64_encode(convert_uuencode($users['id'] )))}}">

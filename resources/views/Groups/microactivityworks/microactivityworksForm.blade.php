@@ -48,13 +48,19 @@
  -->
     <div class="form-group">
       <label for="pwd">Activity Group Name</label>
-           <select id="activity_group_id" name="activity_group_id" class="form-control" >
+           <select id="country" name="activity_group_id" class="form-control" >
                 <option value="" selected disabled>Select</option>
-                  @foreach($activity_group as $key => $activity)
-                  <option value="{{$key}}"> {{$activity}}</option>
+                  @foreach($countries as $key => $country)
+                  <option value="{{$key}}"> {{$country}}</option>
                   @endforeach
            </select>
     </div>
+
+    <div class="form-group">
+       <label for="pwd">Sub Activity Work Name</label>
+           <select id="state" name="sub_activity_works_id" class="form-control" >
+           </select>
+     </div>
 
     <div class="form-group">
       <label for="pwd">Micro Activity Works </label>
@@ -68,6 +74,37 @@
     <div class="col-md-3"></div>
   </div>
 </div>
+
+
+
+<script type="text/javascript">
+    $('#country').change(function(){
+    var countryID = $(this).val();
+    //alert(countryID);
+    if(countryID){
+        $.ajax({
+           type:"GET",
+           url:"{{url('subactivityworksList')}}?country_id="+countryID,
+           //data: "namee",
+           success:function(res){               
+            if(res){
+                $("#state").empty();
+                $("#state").append('<option>Select</option>');
+                $.each(res,function(key,value){
+                    $("#state").append('<option value="'+key+'">'+value+'</option>');
+                });
+           
+            }else{
+               $("#state").empty();
+            }
+           }
+        });
+    }else{
+        $("#state").empty();
+    }      
+   });
+
+</script>
 
 </body>
 </html>

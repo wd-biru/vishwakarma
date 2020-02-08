@@ -15,7 +15,7 @@
   <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6 ">
-      
+
 
   <h2>Edit Micro Activity Works Form</h2>
   <h3><a href="{{URL('/microactivityworksShow')}}"> Go Back </a></h3>

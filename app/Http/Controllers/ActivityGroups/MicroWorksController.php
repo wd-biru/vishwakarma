@@ -10,9 +10,20 @@ use App\Models\Groups\Vishwa_micro_activity_work;
 class MicroWorksController extends Controller
 {
     public function index(){
-            $activity_group = DB::table("vishwa_activity_groups")->pluck("activity_group","id");
-     	    return view('Groups.microactivityworks.microactivityworksForm',compact('activity_group'));
+            $countries = DB::table("vishwa_activity_groups")->pluck("activity_group","id");
+            //$sub_activity_work = DB::table("vishwa_sub_activity_works")->pluck("sub_activity_work","id");
+
+     	   // return view('Groups.microactivityworks.microactivityworksForm',compact('activity_group'),compact('sub_activity_work'));
+            return view('Groups.microactivityworks.microactivityworksForm',compact('countries'));
+
           }
+    public function subactivityworksList(Request $request)
+        {
+            //echo "hihi";
+            $states = DB::table("vishwa_sub_activity_works")->where("activity_group_id",$request->country_id)->pluck("sub_activity_work","id");
+           // dd($states);
+            return response()->json($states);
+        }
 
     public function microactivityworksStore(Request $request){
 
@@ -20,9 +31,10 @@ class MicroWorksController extends Controller
 
     		'micro_activity_work' => 'required | unique:vishwa_micro_activity_works',
     	]);
-      //dd($request);
-    	$microactivityworks = new Vishwa_micro_activity_work;
+      
+      	$microactivityworks = new Vishwa_micro_activity_work;
     	$microactivityworks->activity_group_id  = $request->input('activity_group_id');
+        $microactivityworks->sub_activity_works_id = $request->input('sub_activity_works_id');
     	$microactivityworks->micro_activity_work  = $request->input('micro_activity_work');
 
     	$microactivityworks->save();
