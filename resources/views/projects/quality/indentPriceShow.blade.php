@@ -29,7 +29,6 @@
         outline: inherit;
     }
 </style>
-
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
@@ -42,6 +41,7 @@
                     <div class="col-md-12">
 
                       <div class="table-responsive" style="width:100%">
+
                                 <table id="data-table" class="table table-striped table-hover table-condensed table-bordered">
                                     @if(count($indent)> 0)
                                         <thead>
@@ -51,6 +51,7 @@
                                              <th>Name of Item</th>
                                              <th>Quantity</th>
                                              <th>Material Unit</th>
+
                                              @foreach($vendor_indent_mapping  as  $vendor_list)
                                              <th>{{ucfirst($vendor_list->company_name)}}</th>
                                              @endforeach
@@ -69,11 +70,14 @@
                                                     <td>{{$list->qty}}</td>
                                                     <td>{{$list->unit}}</td>
 
+
                                                     @foreach($vendor_indent_mapping  as  $vendor_price)
                                                     <?php   
                                                     $priceVendor = $list->getPriceAginstEachVendor($vendor_price->id,$list->indent_id,$list->item_id); 
  
-                                      
+
+
+
                                                     $price = ($priceVendor==false) ? "" :  $priceVendor->price;  
                                                     $lowest = ($priceVendor==false) ? "" :  $priceVendor->lowest;  
                                                     $LowColor = ($priceVendor==false) ? "fff" :  $priceVendor->LowColor;  

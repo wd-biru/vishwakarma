@@ -17,5 +17,17 @@ class MaterialItem extends Model
     	return $this->belongsTo(MasterMaterialsGroup::class,'group_id');
     }
 
+    public function toArray()
+    {
+        $attributes = $this->attributesToArray();
+        return array_merge($attributes, $this->relationsToArray());
+    }
+
+
+    public function toJson($options = 0)
+    {
+        return json_encode($this->toArray(), $options);
+    }
+
     
 }

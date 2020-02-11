@@ -7,7 +7,7 @@
         <div>
             <ul class="breadcrumb">     
                 <li><a href=""><i class="fa fa-home fa-lg"></i></a></li>
-                <li><a href="{{route('MaterialRecipt.index')}}">Material Receipt</a></li>
+                <li><a href="">Material Receipt</a></li>
             </ul>
         </div>
     </div>
@@ -32,12 +32,18 @@
                               <div class="row">
                                 <div class="col-md-2">
                                 <label>From Date</label>
-                                <input type="text" class="datetimepicker form-control" autocomplete="off" name="from_date" required>
-                              </div> 
+
+                                    <input  class="datepicker" autocomplete="off" name="from_date" id="to_from_date" placeholder="From Date" value="" style="
+    font-size: 14px;" required>
+
+
+
+                              </div>
                               <div class="col-md-2">
                                 <label>To Date</label>
-                                <input type="text" class="datetimepicker form-control" autocomplete="off" name="to_date" required>
-                              </div> 
+                                  <input  class="datepicker" autocomplete="off" name="to_date" id="to_to_date" placeholder="To Date" value="" style="
+    font-size: 14px;">
+                              </div>
                               <div class="col-md-1"> 
                                 <label>&nbsp;</label>
                                 <br>
@@ -105,12 +111,17 @@
 
 <script>
 
-   jQuery('.datetimepicker').datepicker({
-      autoclose: true, 
-      todayHighlight: true,
-      endDate: new Date(),   
-      format: 'dd/mm/yyyy'
-  });
+    $('#to_from_date').datepicker({
+        format:"dd-mm-yyyy",
+        autoclose: true,
+        todayHighlight: true,
+    });
+    //
+    $('#to_to_date').datepicker({
+        format: 'dd-mm-yyyy',
+        autoclose: true,
+        todayHighlight: true,
+    });
 
  $('.datatable').DataTable({});
 

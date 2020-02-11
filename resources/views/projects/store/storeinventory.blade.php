@@ -9,7 +9,7 @@
             <li><a href="{{route('admin.dashboard')}}"><i class="fa fa-home fa-lg"></i></a></li>
             <li>{{ link_to_route('projects.index',trans('project.projects'), ['status_id' => request('status_id', $project->status_id)]) }}</li>
             <li>{{ $project->present()->projectLink }}</li>
-            <li><a href="">Project Store Stock Maintence</a></li>
+            <li><a href="">{{$project->present()->store_name}}-Stock Maintence</a></li>
             
         </ul>
     </div>

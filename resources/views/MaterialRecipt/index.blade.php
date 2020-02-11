@@ -7,7 +7,7 @@
         <div>
             <ul class="breadcrumb">     
                 <li><a href=""><i class="fa fa-home fa-lg"></i></a></li>
-                <li><a href="{{route('MaterialRecipt.index')}}">Material Receipt</a></li>
+                <li><a href="">Material Receipt</a></li>
             </ul>
         </div>
     </div>
@@ -24,54 +24,60 @@
 @endif
 @include('includes.validation_messages')
  
- <div class="row">
-      <div  class="col-md-12">
-        <div class="content-section">              
-                        <form  action="{{route('MaterialRecipt.getChallanItem')}}" method="post">
-                             {{ csrf_field() }}
-                             <div class="row">
-                              <div class="col-md-2">
-                                <label>Projects</label>
-                                <select class="form-control selectable" name="project" id="project">
-                                   <option  value="0">Please Select</option>
-                                       @foreach($projects as $list)
-                                    <option  value="{{$list->id}}">{{$list->name}}</option>
-                                       @endforeach
-                              </select>
-                              </div>
-                              <div class="col-md-2">
-                                <label>Store</label>
-                                <select class="form-control" name="stores" id="stores">
-                                  <option  value="0">Please Select</option>
-                               </select>
-                              </div>
-                              <div class="col-md-2">
-                                <label>Vendor</label>
-                                <select class="form-control" name="vendor" id="vendor">
-                                  <option  value="0">Please Select</option>
-                                   
-                              </select>
-                              </div>
-                              <div class="col-md-2">
-                                <label>Challan</label>
-                                <select class="form-control" name="Challan" id="challan_no">
-                                 <option  value="0">Please Select</option>
-                                  
-                              </select>
-                              </div>
+ {{--<div class="row">--}}
+      {{--<div  class="col-md-12">--}}
+        {{--<div class="content-section">              --}}
+                        {{--<form  action="{{route('MaterialRecipt.getChallanItem')}}" method="post">--}}
+                             {{--{{ csrf_field() }}--}}
+                             {{--<div class="row">--}}
+                                 {{--<div class="col-md-2">--}}
+                                     {{--<label>Projects</label>--}}
+                                     {{--<select class="form-control selectable" name="project" id="project">--}}
+                                         {{--<option value="0">Please Select</option>--}}
+                                         {{--@foreach($projects as $list)--}}
+                                             {{--<option value="{{$list->id}}">{{$list->name}}</option>--}}
+                                         {{--@endforeach--}}
+                                     {{--</select>--}}
+                                 {{--</div>--}}
+                                 {{--<div class="col-md-2">--}}
+                                     {{--<label>Store</label>--}}
+                                     {{--<select class="form-control" name="stores" id="stores">--}}
+                                         {{--<option value="0">Please Select</option>--}}
+                                     {{--</select>--}}
+                                 {{--</div>--}}
+                                 {{--<div class="col-md-2">--}}
+                                     {{--<label>Vendor</label>--}}
+                                     {{--<select class="form-control" name="vendor" id="vendor">--}}
+                                         {{--<option value="0">Please Select</option>--}}
 
-                              <div class="col-md-1"> 
-                                <label>&nbsp;</label>
-                                <br>
-                                <button type="submit" id="go" class="btn btn-primary">Go</button>
-                              </div>
-                             </div>
-                    </form>
-             </div>
-        </div>
-</div>
+                                     {{--</select>--}}
+                                 {{--</div>--}}
+                                 {{--<div class="col-md-2">--}}
+                                     {{--<label>Challan</label>--}}
+                                     {{--<select class="form-control" name="Challan" id="challan_no">--}}
+                                         {{--<option value="0">Please Select</option>--}}
 
+                                     {{--</select>--}}
+                                 {{--</div>--}}
+                                 {{--<div class="col-md-2">--}}
+                                     {{--<label>Gate/Qc</label>--}}
+                                     {{--<select class="form-control" name="Challan" id="challan_no">--}}
+                                         {{--<option value="0">Please Select</option>--}}
 
+                                     {{--</select>--}}
+                                 {{--</div>--}}
+                                 {{--<div class="col-md-1">--}}
+                                     {{--<label>&nbsp;</label>--}}
+                                     {{--<br>--}}
+                                     {{--<button type="submit" id="go" class="btn btn-primary">Go</button>--}}
+                                 {{--</div>--}}
+                             {{--</div>--}}
+                    {{--</form>--}}
+             {{--</div>--}}
+        {{--</div>--}}
+{{--</div>--}}
+
+<label class="label label-success lb-lg" style="margin-left: 42%;padding: 8px 16px 8px;">Generate Bill</label>
 @if($challan_item!=null)
  <div class="row" id="table_div">
 
@@ -79,7 +85,7 @@
 
      <div  class="content-section">
                <form class="form-horizontal" action="{{route('MaterialRecipt.StoreToInward')}}" method="post" id="form_data">
-                  <table class="table table-bordered table-hover search-table" style="margin-top: 120px">
+                  <table class="table table-bordered table-hover"  >
                   <thead>
                   <tr>
                       <th>Material Name</th>
@@ -145,7 +151,7 @@
 
                               <div class="col-md-2">
                                 <label>Arrival Time</label>
-                   <input class="form-control" type="time" name="arrival_time"><br>
+                   <input class="form-control" type="time" name="arrival_time" id="moving_arrival_time" readonly value=""><br>
                               </div>
 
 
@@ -181,6 +187,26 @@
 
 <script>
 
+    $(document).ready(function () {
+        display_ct();
+    });
+
+
+    function display_c() {
+        var refresh = 1000; // Refresh rate in milli seconds
+        mytime = setTimeout('display_ct()', refresh)
+    }
+
+    function display_ct() {
+        var x = new Date()
+        var x1 = x.getMonth() + 1 + "/" + x.getDate() + "/" + x.getYear();
+        x1 = x.getHours() + ":" + x.getMinutes() + ":" + x.getSeconds();
+        document.getElementById('moving_arrival_time').value = x1;
+        // $('moving_arrival_time').val(x1);
+
+        display_c();
+    }
+
     jQuery('.datetimepicker').datepicker({
       autoclose: true, 
       todayHighlight: true,
@@ -194,9 +220,6 @@
   $(document).ready(function(){
     $("#form_submit").click(function(){
 
-
-
-                      
                        if($('#mr_date').val()=="")
                        {
                           alert('Please Fill Material Recipt Date')
@@ -218,286 +241,252 @@
     //***********************************************for getting Store*********************************//
 
 
-      jQuery(document).on('change','#project ',function(){ 
-                var project_id = $(this).val();
+    jQuery(document).on('change', '#project ', function () {
+        var project_id = $(this).val();
 
-                      $.ajax({
-                        type: "get",
-                        url: "{{route('MaterialRecipt.getStore')}}",
-                        data: { 
-                            project_id:project_id,
-                            "_token": "{{ csrf_token() }}"
-                            
-                          
-                        },
-                            success: function(data) {
-                                                     
-                                
-                                    var opt='';
-                                    jQuery.each(data, function(index,value)
-                                    {     
-                                    opt+='<option value="'+value.id+'">'+value.store_name+'</option>';
-                                    });
-
-                                    jQuery('#stores').html(opt);
-
-                              //******************for vendor  ***************//
-
-                              var project_id = $('#project').val();
-                              var store_id = $('#stores').val();
-
-                                      $.ajax({
-                                              type: "get",
-                                              url: "{{route('MaterialRecipt.getvendor')}}",
-                                              data: { 
-                                                  project_id:project_id,
-                                                  store_id:store_id,
-                                                  "_token": "{{ csrf_token() }}"
-                                                  
-                                                
-                                              },
-                                                success: function(data) {
-                                                   
-                                                        var opt='';
-                                                        jQuery.each(data, function(index,value)
-                                                        {     
-                                                        opt+='<option value="'+value.vendor_id+'">'+value.company_name+'</option>';
-                                                        });
-
-                                                        jQuery('#vendor').html(opt);
+        $.ajax({
+            type: "get",
+            url: "{{route('MaterialRecipt.getStore')}}",
+            data: {
+                project_id: project_id,
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function (data) {
 
 
-                                                         //******************for challan  ***************//
+                var opt = '';
+                jQuery.each(data, function (index, value) {
+                    opt += '<option value="' + value.id + '">' + value.store_name + '</option>';
+                });
 
-                                                      var project_id = $('#project').val();
-                                                      var store_id = $('#stores').val();
-                                                      var vendor_id = $('#vendor').val();
+                jQuery('#stores').html(opt);
 
-                                                      $.ajax({
-                                                              type: "get",
-                                                              url: "{{route('MaterialRecipt.getChallan')}}",
-                                                              data: { 
-                                                                  project_id:project_id,
-                                                                  store_id:store_id,
-                                                                  vendor_id:vendor_id,
-                                                                  "_token": "{{ csrf_token() }}"
-                                                                  
-                                                                
-                                                              },
-                                                                success: function(data) {
-                                                                   
-                                                                   $("#go").attr("disabled", true);
-                                                                   
-                                                                  
+                //******************for vendor  ***************//
 
-                                                                        var opt='';
-                                                                jQuery.each(data, function(index,value)
-                                                                {     
-                                                                  
-                                                                  if(value.challan_no!=value.challan_inv)
-                                                                  {
+                var project_id = $('#project').val();
+                var store_id = $('#stores').val();
 
-                                                                    $("#go").attr("disabled", false);
-                                                                opt+='<option value="'+value.challan_no+'">'+value.challan_no+'</option>';
-                                                          
-                                                                  }
-                                                                    
+                $.ajax({
+                    type: "get",
+                    url: "{{route('MaterialRecipt.getvendor')}}",
+                    data: {
+                        project_id: project_id,
+                        store_id: store_id,
+                        "_token": "{{ csrf_token() }}"
 
 
-                                                                });
+                    },
+                    success: function (data) {
 
-                                                                  
-                                                                        jQuery('#challan_no').html(opt);
+                        var opt = '';
+                        jQuery.each(data, function (index, value) {
+                            opt += '<option value="' + value.vendor_id + '">' + value.company_name + '</option>';
+                        });
 
-                                                               
-                                                               
-
-                                                                },      
-                                                                   error: function(result) {
-                                                                      alert('Error in challan');
-                                                                  }
-                                                                
-                                                              }); 
+                        jQuery('#vendor').html(opt);
 
 
+                        //******************for challan  ***************//
 
-                                                              //******************end chalaln***************//
+                        var project_id = $('#project').val();
+                        var store_id = $('#stores').val();
+                        var vendor_id = $('#vendor').val();
 
-                                               
-                                               
-
-                                                },      
-                                                   error: function(result) {
-                                                      alert('Error in vendor');
-                                                  }
-                                                
-                                              }); 
-
+                        $.ajax({
+                            type: "get",
+                            url: "{{route('MaterialRecipt.getChallan')}}",
+                            data: {
+                                project_id: project_id,
+                                store_id: store_id,
+                                vendor_id: vendor_id,
+                                "_token": "{{ csrf_token() }}"
 
 
-                                   //******************end vendor***************//
-                                
-                           
+                            },
+                            success: function (data) {
 
-                            },      
-                             error: function(result) {
-                                alert('Error in getting Store Details');
+                                $("#go").attr("disabled", true);
+
+
+                                var opt = '';
+                                jQuery.each(data, function (index, value) {
+
+                                    if (value.challan_no != value.challan_inv) {
+
+                                        $("#go").attr("disabled", false);
+                                        opt += '<option value="' + value.challan_no + '">' + value.challan_no + '</option>';
+
+                                    }
+
+
+                                });
+
+
+                                jQuery('#challan_no').html(opt);
+
+
+                            },
+                            error: function (result) {
+                                alert('Error in challan');
                             }
-                          
-                   }); 
-    
-     });
+
+                        });
 
 
-        //***********************************************End getting Store*********************************//
+                        //******************end chalaln***************//
 
 
+                    },
+                    error: function (result) {
+                        alert('Error in vendor');
+                    }
 
-      jQuery(document).on('change','#stores ',function(){ 
-                               var project_id = $('#project').val();
-                              var store_id = $('#stores').val();
-
-                                      $.ajax({
-                                              type: "get",
-                                              url: "{{route('MaterialRecipt.getvendor')}}",
-                                              data: { 
-                                                  project_id:project_id,
-                                                  store_id:store_id,
-                                                  "_token": "{{ csrf_token() }}"
-                                                  
-                                                
-                                              },
-                                                success: function(data) {
+                });
 
 
-                                                 
-                                                        var opt='';
-                                                        jQuery.each(data, function(index,value)
-                                                        {     
-                                                        opt+='<option value="'+value.vendor_id+'">'+value.company_name+'</option>';
-                                                        });
-
-                                                        jQuery('#vendor').html(opt);
+                //******************end vendor***************//
 
 
-                                                         //******************for challan  ***************//
+            },
+            error: function (result) {
+                alert('Error in getting Store Details');
+            }
 
-                                                      var project_id = $('#project').val();
-                                                      var store_id = $('#stores').val();
-                                                      var vendor_id = $('#vendor').val();
+        });
 
-                                                      $.ajax({
-                                                              type: "get",
-                                                              url: "{{route('MaterialRecipt.getChallan')}}",
-                                                              data: { 
-                                                                  project_id:project_id,
-                                                                  store_id:store_id,
-                                                                  vendor_id:vendor_id,
-                                                                  "_token": "{{ csrf_token() }}"
-                                                                  
-                                                                
-                                                              },
-                                                                success: function(data) {
-                                                                     console.log(data);
-                                                                      $("#go").attr("disabled", true);
-
-                                                                        var opt='';
-                                                                jQuery.each(data, function(index,value)
-                                                                {     
-
-                                                                  if(value.challan_no!=value.challan_inv)
-                                                                  {
-                                                                      $("#go").attr("disabled", false);
-                                                                opt+='<option value="'+value.challan_no+'">'+value.challan_no+'</option>';
-                                                                  }
+    });
 
 
-                                                                });
-
-                                                                  
-                                                                        jQuery('#challan_no').html(opt);
-
-                                                               
-                                                               
-
-                                                                },      
-                                                                   error: function(result) {
-                                                                      alert('Error in challan');
-                                                                  }
-                                                                
-                                                              }); 
+    //***********************************************End getting Store*********************************//
 
 
+    jQuery(document).on('change', '#stores ', function () {
+        var project_id = $('#project').val();
+        var store_id = $('#stores').val();
 
-                                                              //******************end chalaln***************//
-
-                                               
-                                               
-
-                                                },      
-                                                   error: function(result) {
-                                                      alert('Error in vendor');
-                                                  }
-                                                
-                                              }); 
+        $.ajax({
+            type: "get",
+            url: "{{route('MaterialRecipt.getvendor')}}",
+            data: {
+                project_id: project_id,
+                store_id: store_id,
+                "_token": "{{ csrf_token() }}"
 
 
-                                                      
+            },
+            success: function (data) {
 
+
+                var opt = '';
+                jQuery.each(data, function (index, value) {
+                    opt += '<option value="' + value.vendor_id + '">' + value.company_name + '</option>';
+                });
+
+                jQuery('#vendor').html(opt);
+
+
+                //******************for challan  ***************//
+
+                var project_id = $('#project').val();
+                var store_id = $('#stores').val();
+                var vendor_id = $('#vendor').val();
+
+                $.ajax({
+                    type: "get",
+                    url: "{{route('MaterialRecipt.getChallan')}}",
+                    data: {
+                        project_id: project_id,
+                        store_id: store_id,
+                        vendor_id: vendor_id,
+                        "_token": "{{ csrf_token() }}"
+
+
+                    },
+                    success: function (data) {
+
+                        $("#go").attr("disabled", true);
+
+                        var opt = '';
+                        jQuery.each(data, function (index, value) {
+
+                            if (value.challan_no != value.challan_inv) {
+                                $("#go").attr("disabled", false);
+                                opt += '<option value="' + value.challan_no + '">' + value.challan_no + '</option>';
+                            }
+
+
+                        });
+
+
+                        jQuery('#challan_no').html(opt);
+
+
+                    },
+                    error: function (result) {
+                        alert('Error in challan');
+                    }
+
+                });
+
+
+                //******************end chalaln***************//
+
+
+            },
+            error: function (result) {
+                alert('Error in vendor');
+            }
 
         });
 
 
-
-            jQuery(document).on('change','#vendor ',function(){ 
-                                                       var project_id = $('#project').val();
-                                                      var store_id = $('#stores').val();
-                                                      var vendor_id = $('#vendor').val();
-
-                                                      $.ajax({
-                                                              type: "get",
-                                                              url: "{{route('MaterialRecipt.getChallan')}}",
-                                                              data: { 
-                                                                  project_id:project_id,
-                                                                  store_id:store_id,
-                                                                  vendor_id:vendor_id,
-                                                                  "_token": "{{ csrf_token() }}"
-                                                                  
-                                                                
-                                                              },
-                                                                success: function(data) {
-                                                                     console.log(data);
-                                                                      $("#go").attr("disabled", true);
-
-                                                                        var opt='';
-                                                                jQuery.each(data, function(index,value)
-                                                                {     
-
-                                                                  if(value.challan_no!=value.challan_inv)
-                                                                  {
-                                                                      $("#go").attr("disabled", false);
-                                                                opt+='<option value="'+value.challan_no+'">'+value.challan_no+'</option>';
-                                                                  }
+    });
 
 
-                                                                });
+    jQuery(document).on('change', '#vendor ', function () {
+        var project_id = $('#project').val();
+        var store_id = $('#stores').val();
+        var vendor_id = $('#vendor').val();
 
-                                                                  
-                                                                        jQuery('#challan_no').html(opt);
+        $.ajax({
+            type: "get",
+            url: "{{route('MaterialRecipt.getChallan')}}",
+            data: {
+                project_id: project_id,
+                store_id: store_id,
+                vendor_id: vendor_id,
+                "_token": "{{ csrf_token() }}"
 
-                                                               
-                                                               
 
-                                                                },      
-                                                                   error: function(result) {
-                                                                      alert('Error in challan');
-                                                                  }
-                                                                
-                                                              }); 
-                                                    
- 
+            },
+            success: function (data) {
+
+                $("#go").attr("disabled", true);
+
+                var opt = '';
+                jQuery.each(data, function (index, value) {
+
+                    if (value.challan_no != value.challan_inv) {
+                        $("#go").attr("disabled", false);
+                        opt += '<option value="' + value.challan_no + '">' + value.challan_no + '</option>';
+                    }
+
+
+                });
+
+
+                jQuery('#challan_no').html(opt);
+
+
+            },
+            error: function (result) {
+                alert('Error in challan');
+            }
 
         });
+
+
+    });
 
 
 

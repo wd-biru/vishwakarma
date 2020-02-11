@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin\master\MatMgmt;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MasterMaterialsGroup;
+use App\Models\VishwaGroupType;
 use App\Models\MasterUnit;
 use App\Models\MaterialItem;
 use Session;
@@ -24,12 +25,20 @@ class MaterialMangementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {   
-        $group_material = MasterMaterialsGroup::all();
+    public function index(Request $request)
+    {
+        $group_type_id = $request->input('group_type_id');
+        if($group_type_id == null){
+              $group_material = MasterMaterialsGroup::all();
+          }else{
+              $group_material = MasterMaterialsGroup::where('group_type_id',$group_type_id)->get();
+          }
+      
+        $group_type = VishwaGroupType::all();
+       
 
-//        dd($group_material);
-        return view('admin.master.MatMgmt.group_material',compact('group_material'));
+       // dd($group_type);
+        return view('admin.master.MatMgmt.group_material',compact('group_material','group_type'));
     }
 
     /**
@@ -41,12 +50,13 @@ class MaterialMangementController extends Controller
     public function store(Request $request)
     {                  
         $this->validate($request, [
-
+             'group_type_id' => 'required',
             'group_name' => 'required',
         ]);
 
         $groupmaterial = new MasterMaterialsGroup();
-        $groupmaterial->group_name = trim($request->input('group_name'));          
+        $groupmaterial->group_name = trim($request->input('group_name'));
+        $groupmaterial->group_type_id = trim($request->input('group_type_id'));          
         $result = MasterMaterialsGroup::where('group_name',trim($groupmaterial->group_name))->first();  
 
         if($result==null)
@@ -162,16 +172,21 @@ class MaterialMangementController extends Controller
 
      public function Getgroupitem(Request $request,$id)
     {   
+      
         $material_unit = MasterUnit::all();
         $group_material = MasterMaterialsGroup::all();
 //        $material_item = MaterialItem::where('group_id',$id)->get();
 
+         $group_type = VishwaGroupType::all();
         $material_item=DB::table('vishwa_materials_item')
             ->join('vishwa_unit_masters','vishwa_materials_item.material_unit','vishwa_unit_masters.id')
             ->where('vishwa_materials_item.group_id',$id)
             ->select('vishwa_materials_item.*','vishwa_unit_masters.material_unit as mat_unit')->get();
+               
         $groupdata = MasterMaterialsGroup::where('id',$id)->first();
-        return view('admin.master.MatMgmt.group_material',compact('group_material','material_item','groupdata','material_unit'));
+
+
+        return view('admin.master.MatMgmt.group_material',compact('group_material','material_item','groupdata','material_unit','group_type'));
         
     }
 

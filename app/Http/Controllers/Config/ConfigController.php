@@ -3,7 +3,14 @@
 namespace App\Http\Controllers\Config;
 
 use App\Http\Controllers\Controller;
+use App\Models\VishwaFollowers;
+use App\Models\VishwaMasterBillingCycle;
+use App\Models\VishwaNotification;
 use App\Models\VishwaPurchaseOrder;
+use App\Models\VishwaWorkflowName;
+use App\Notifications\UserAllowed;
+use App\Notifications\UserFollowed;
+use App\User;
 use Illuminate\Http\Request;
 use App\Models\VishwaUserWorkflowRoleMapping;
 use App\Models\VishwaAdminConfigs;
@@ -28,31 +35,30 @@ class ConfigController extends Controller
 
     public function index(Request $request)
     {
-         
+
         $VishwaAdminConfigs = VishwaAdminConfigs::all();
-        return view('Config.config',compact('VishwaAdminConfigs'));
+        return view('Config.config', compact('VishwaAdminConfigs'));
     }
 
 
-     public function store(Request $request)
+    public function store(Request $request)
     {
-    
-        $portals = Portal::all();
- 
-        foreach ($portals as $key => $value) 
-        {
 
-        $VishwaPortalConfigs = new VishwaPortalConfigs();  
-        $VishwaPortalConfigs->portal_id =  $value->id;
-        $VishwaPortalConfigs->field_label = $request->input('field_label');
-        $VishwaPortalConfigs->field_name = $request->input('field_name');
-        $VishwaPortalConfigs->input_type = $request->input('input_type');
-        $VishwaPortalConfigs->config_order = $request->input('config_order');
-        $VishwaPortalConfigs->option = $request->input('option');
-        $VishwaPortalConfigs->value = $request->input('value');     
-        $VishwaPortalConfigs->save();
- 
-            
+        $portals = Portal::all();
+
+        foreach ($portals as $key => $value) {
+
+            $VishwaPortalConfigs = new VishwaPortalConfigs();
+            $VishwaPortalConfigs->portal_id = $value->id;
+            $VishwaPortalConfigs->field_label = $request->input('field_label');
+            $VishwaPortalConfigs->field_name = $request->input('field_name');
+            $VishwaPortalConfigs->input_type = $request->input('input_type');
+            $VishwaPortalConfigs->config_order = $request->input('config_order');
+            $VishwaPortalConfigs->option = $request->input('option');
+            $VishwaPortalConfigs->value = $request->input('value');
+            $VishwaPortalConfigs->save();
+
+
         }
 
         $VishwaAdminConfigs = new VishwaAdminConfigs();
@@ -65,61 +71,57 @@ class ConfigController extends Controller
         $VishwaAdminConfigs->category = $request->input('category');
         $VishwaAdminConfigs->save();
 
-        $request->session()->flash('success_message','Insert Successfully!!'); 
-         return redirect()->back();
+        $request->session()->flash('success_message', 'Insert Successfully!!');
+        return redirect()->back();
     }
-
 
 
     public function edit($id)
     {
-       
-        $VishwaAdminConfigs = VishwaAdminConfigs::find($id); 
-        return view('Config.config_edit',compact('VishwaAdminConfigs'));
+
+        $VishwaAdminConfigs = VishwaAdminConfigs::find($id);
+        return view('Config.config_edit', compact('VishwaAdminConfigs'));
     }
 
 
-     public function ConfigPortal(Request $request)
+    public function ConfigPortal(Request $request)
     {
 
 
-          $portal = Auth::user()->getPortal()->first();
-          $portal_config =  VishwaPortalConfigs::where('portal_id',$portal->id)->orderBy('config_order','ASC')->get();
-           
- 
-            $portal = Auth::user()->getPortal()->first();
-            if($portal!=null)
-            {
-                $employees = EmployeeProfile::where('portal_id',$portal->id)->get();
-
-            }
-            else
-            {
-                $employees = EmployeeProfile::all();
-
-            }
-             $departments = DepartmentMaster::all();
-
-           $VishwaUserWorkflowRoleMapping = DB::table('vishwa_workflow_master')
-        ->join('vishwa_user_workflow_role_mapping', 'vishwa_user_workflow_role_mapping.workflowid' ,'=', 'vishwa_workflow_master.id')
-        ->join('vishwa_employee_profile', 'vishwa_employee_profile.id', '=', 'vishwa_user_workflow_role_mapping.employee_Id')
-        ->where('vishwa_workflow_master.portal_id',$portal->id)
-        ->select('vishwa_user_workflow_role_mapping.*','vishwa_employee_profile.*')
-        ->get();
-
-                  $VishwaUserWorkflowRoleMapping = $VishwaUserWorkflowRoleMapping->groupBy('sequence');
-              
-                  
+        $portal = Auth::user()->getPortal()->first();
+        $portal_config = VishwaPortalConfigs::where('portal_id', $portal->id)->orderBy('config_order', 'ASC')->get();
 
 
-        return view('Config.index',compact('portal_config','employees','departments','VishwaUserWorkflowRoleMapping'));
-        
+        $portal = Auth::user()->getPortal()->first();
+        if ($portal != null) {
+            $employees = EmployeeProfile::where('portal_id', $portal->id)->get();
+
+        } else {
+            $employees = EmployeeProfile::all();
+
+        }
+        $departments = DepartmentMaster::all();
+
+        $VishwaUserWorkflowRoleMapping = DB::table('vishwa_workflow_master')
+            ->join('vishwa_user_workflow_role_mapping', 'vishwa_user_workflow_role_mapping.workflowid', '=', 'vishwa_workflow_master.id')
+            ->join('vishwa_employee_profile', 'vishwa_employee_profile.id', '=', 'vishwa_user_workflow_role_mapping.employee_Id')
+            ->where('vishwa_workflow_master.portal_id', $portal->id)
+            ->select('vishwa_user_workflow_role_mapping.*', 'vishwa_employee_profile.*')
+            ->get();
+
+        $VishwaUserWorkflowRoleMapping = $VishwaUserWorkflowRoleMapping->groupBy('sequence');
+
+
+        return view('Config.index', compact('portal_config', 'employees', 'departments', 'VishwaUserWorkflowRoleMapping'));
+
     }
 
     public function ConfigPortalWorkFlow(Request $request)
     {
-        $workFlows = WorkFlowMaster::where('portal_id',Auth::user()->getPortal->id)->get();
-        return view('Config.workflowConfig',compact('workFlows'));
+        $workFlows = WorkFlowMaster::where('portal_id', Auth::user()->getPortal->id)->get();
+
+        $workFlows_name = VishwaWorkflowName::all();
+        return view('Config.workflowConfig', compact('workFlows', 'workFlows_name'));
     }
 
     public function StepProcess(Request $request)
@@ -197,11 +199,10 @@ class ConfigController extends Controller
     }
 
 
-
     public function Update(Request $request)
     {
         $id = $request->input('id');
-       
+
         $VishwaAdminConfigs = VishwaAdminConfigs::find($id);
         $VishwaAdminConfigs->field_label = $request->input('field_label');
         $VishwaAdminConfigs->field_name = $request->input('field_name');
@@ -210,25 +211,29 @@ class ConfigController extends Controller
         $VishwaAdminConfigs->value = $request->input('value');
         $VishwaAdminConfigs->config_order = $request->input('config_order');
         $VishwaAdminConfigs->category = $request->input('category');
-        $VishwaAdminConfigs->save(); 
-       $request->session()->flash('success_message','Update Successfully!!');
-         return redirect()->route('admin.config');
+        $VishwaAdminConfigs->save();
+        $request->session()->flash('success_message', 'Update Successfully!!');
+        return redirect()->route('admin.config');
 
 
     }
 
     public function workflowAdd(Request $request)
-    {  
+    {
+
 
         $name = $request->input('name');
+        $modelInfo = VishwaWorkflowName::find($name);
         $portal_id = Auth::user()->getPortal->id;
-        $WorkFlow = WorkFlowMaster::where('name',$name)->first();
-        if($WorkFlow != null){ 
-            $request->session()->flash('error_message',$name.' Config WorkFlow Already Exist'); 
+        $WorkFlow = WorkFlowMaster::where('name', $modelInfo->name)->where('portal_id', $portal_id)->first();
+        if ($WorkFlow != null) {
+            $request->session()->flash('error_message', $modelInfo->name . ' Config WorkFlow Already Exist');
             return back();
-        } 
-        $WorkFlow = WorkFlowMaster::insert(['name'=>$name,'portal_id'=>$portal_id]); 
-        $request->session()->flash('success_message','This Config Added To WorkFlow Successfully!!'); 
+        }
+        $WorkFlow = WorkFlowMaster::insert(['name' => $modelInfo->name, 'portal_id' => $portal_id,
+            'supports' => $modelInfo->supports, 'arguments' => $modelInfo->arguments
+        ]);
+        $request->session()->flash('success_message', 'This Config Added To WorkFlow Successfully!!');
         return back();
     }
 
@@ -249,8 +254,11 @@ class ConfigController extends Controller
         }
         $emp_list = EmployeeProfile::where('portal_id', $portal_id)->get();
 
-        $emp_mapping = vishwaWorkflowUserMapping::where('portal_id', $portal_id)->where('workflow_id', $WorkFlow->id)->get();
+//        $vendor_list=
 
+        $emp_mapping = vishwaWorkflowUserMapping::where('portal_id', $portal_id)->where('workflow_id', $WorkFlow->id)->get();
+        $vendor_mapping = vishwaWorkflowUserMapping::where('portal_id', $portal_id)->where('emp_id', null)
+            ->where('workflow_id', $WorkFlow->id)->get();
 
         $WorkFlowDaigram = [$WorkFlow->name => [
             'type' => 'workflow', // or 'state_machine'
@@ -265,122 +273,205 @@ class ConfigController extends Controller
         ];
 
 
-
         if ($WorkFlow == null) {
             $request->session()->flash('error_message', 'This Config WorkFlow Not Found, please contact to admin.');
             return back();
         }
-        return view('Config.workflow.edit', compact('vendorId','WorkFlow', 'WorkFlowDaigram', 'emp_list', 'emp_mapping'));
+        return view('Config.workflow.edit', compact('vendor_mapping', 'vendorId', 'WorkFlow', 'WorkFlowDaigram', 'emp_list', 'emp_mapping'));
     }
 
-    public function workflowUpdate(Request $request,$id)
-    {  
+    public function workflowUpdate(Request $request, $id)
+    {
 
 
-      //  dd($request->all());
-        
-        $WorkFlow = WorkFlowMaster::where('id',$id)->first(); 
-        if($WorkFlow == null){
-            $request->session()->flash('error_message','This Config WorkFlow Not Found, please contact to admin.'); 
+        $vendor_request = $request->input('vendor_id');
+
+        $WorkFlow = WorkFlowMaster::where('id', $id)->first();
+        if ($WorkFlow == null) {
+            $request->session()->flash('error_message', 'This Config WorkFlow Not Found, please contact to admin.');
             return back();
         }
 
-        if($request->has('place_update_id')){
-            foreach ($request->input('place_update_id') as $key => $value) {  
-                $place_name = $request->input('place_name');              
-                $place =  WorkflowPlace::find($value);
-                $place->place_name =  $place_name[$key];
-                $place->workflow_id =  $WorkFlow->id;
-                $place->save(); 
+        if ($request->has('place_update_id')) {
+            foreach ($request->input('place_update_id') as $key => $value) {
+                $place_name = $request->input('place_name');
+                $place = WorkflowPlace::find($value);
+                $place->place_name = $place_name[$key];
+                $place->workflow_id = $WorkFlow->id;
+                $place->save();
             }
-            $request->session()->flash('success_message','Places Update Successfully.');             
-        }elseif($request->has('trans_update_id')){
-            foreach ($request->input('trans_update_id') as $key => $value) {  
-                $trans_name = $request->input('trans_name');              
-                $trans_from_id = $request->input('trans_from_id');              
-                $trans_to_id = $request->input('trans_to_id');              
-                $trans =  WorkflowTransitions::find($value);
-                $trans->trans_name =  $trans_name[$key];
-                $trans->workflow_id =  $WorkFlow->id;
-                $trans->place_from_id =  $trans_from_id[$key];
-                $trans->place_to_id =  $trans_to_id[$key];
-                $trans->save(); 
+            $request->session()->flash('success_message', 'Places Update Successfully.');
+        } elseif ($request->has('trans_update_id')) {
+            foreach ($request->input('trans_update_id') as $key => $value) {
+                $trans_name = $request->input('trans_name');
+                $trans_from_id = $request->input('trans_from_id');
+                $trans_to_id = $request->input('trans_to_id');
+                $trans = WorkflowTransitions::find($value);
+                $trans->trans_name = $trans_name[$key];
+                $trans->workflow_id = $WorkFlow->id;
+                $trans->place_from_id = $trans_from_id[$key];
+                $trans->place_to_id = $trans_to_id[$key];
+                $trans->save();
             }
-            $request->session()->flash('success_message','Transitions Update Successfully.');             
-        }
-        elseif($request->has('trans_update_id')){
-            foreach ($request->input('trans_update_id') as $key => $value) {  
-                $trans_name = $request->input('trans_name');              
-                $trans_from_id = $request->input('trans_from_id');              
-                $trans_to_id = $request->input('trans_to_id');              
-                $trans =  WorkflowTransitions::find($value);
-                $trans->trans_name =  $trans_name[$key];
-                $trans->workflow_id =  $WorkFlow->id;
-                $trans->place_from_id =  $trans_from_id[$key];
-                $trans->place_to_id =  $trans_to_id[$key];
-                $trans->save(); 
+            $request->session()->flash('success_message', 'Transitions Update Successfully.');
+        } elseif ($request->has('trans_update_id')) {
+            foreach ($request->input('trans_update_id') as $key => $value) {
+                $trans_name = $request->input('trans_name');
+                $trans_from_id = $request->input('trans_from_id');
+                $trans_to_id = $request->input('trans_to_id');
+                $trans = WorkflowTransitions::find($value);
+                $trans->trans_name = $trans_name[$key];
+                $trans->workflow_id = $WorkFlow->id;
+                $trans->place_from_id = $trans_from_id[$key];
+                $trans->place_to_id = $trans_to_id[$key];
+                $trans->save();
             }
-            $request->session()->flash('success_message','Transitions Update Successfully.');             
-        }elseif($request->has('emp')){
+            $request->session()->flash('success_message', 'Transitions Update Successfully.');
+        } elseif ($request->has('emp')) {
 
 
-                  if(Auth::user()->user_type=="portal")
-                    {       
-                         $portal_id = Auth::user()->getPortal->id;
+            if (Auth::user()->user_type == "portal") {
+                $portal_id = Auth::user()->getPortal->id;
+            }
+
+
+            $trans_id = $request->input('trans_id');
+            $trans_name = $request->input('trans_name');
+
+            $input_value = '';
+
+            vishwaWorkflowUserMapping::where('portal_id', $portal_id)->where('workflow_id', $WorkFlow->id)->delete();
+
+
+            $to_note = [];
+            foreach ($request->input('trans_id') as $key => $value) {
+                $input_value = $key . 'emp';
+
+
+                // sending a notification
+//                $user->notify(new UserFollowed($follower));
+
+
+                if ($request->input($input_value)) {
+
+                    foreach ($request->input($input_value) as $input_key => $input_value) {
+
+                        $to_note[] = $input_value;
+
+                        if (is_numeric($input_value)) {
+                            $vishwaWorkflowUserMapping = new vishwaWorkflowUserMapping();
+                            $vishwaWorkflowUserMapping->portal_id = $portal_id;
+                            $vishwaWorkflowUserMapping->workflow_id = $WorkFlow->id;
+                            $vishwaWorkflowUserMapping->Workflow_place_id = $trans_name[$key];
+                            $vishwaWorkflowUserMapping->emp_id = $input_value;
+                            $vishwaWorkflowUserMapping->save();
+
+//                            echo nl2br($follower->user_type ."\r\n");
+                        } else {
+                            $vendor_id = preg_replace('/[^0-9]/', '', $input_value);
+                            $vishwaWorkflowUserMapping = new vishwaWorkflowUserMapping();
+                            $vishwaWorkflowUserMapping->portal_id = $portal_id;
+                            $vishwaWorkflowUserMapping->workflow_id = $WorkFlow->id;
+                            $vishwaWorkflowUserMapping->Workflow_place_id = $trans_name[$key];
+                            $vishwaWorkflowUserMapping->vendor_id = $vendor_id;
+                            $vishwaWorkflowUserMapping->save();
+                        }
+
+                    }
+                }
+
+            }
+
+            $portal_user = auth::user()->getPortal->user_id;
+
+            $portal_follower=User::find($portal_user);
+
+//            dd($portal_user);
+
+
+//            foreach ($to_note as $toCheck) {
+//                foreach ($to_note as $toAttach) {
+//                    $emp = EmployeeProfile::find($toAttach);
+//                    $follower = User::where('id', $emp->user_id)->first();
+//                    $to_update = VishwaNotification::where('notifiable_id', $follower->id)->first();
+//                    $to_update_check = VishwaFollowers::where('user_id', $follower->id)->first();
+//                    if ($to_update != null && $to_update_check != null) {
+//                        $to_update->delete();
+//                        $to_update_check->delete();
+//                    }
+//
+//                    $to_portal_update = VishwaNotification::where('notifiable_id', $portal_user)->first();
+//                    $to_portal_update_check = VishwaFollowers::where('user_id', $portal_user)->first();
+//                    if ($to_portal_update != null && $to_portal_update_check != null) {
+//                        $to_portal_update->delete();
+//                        $to_portal_update_check->delete();
+//                    }
+//                }
+//            }
+
+
+            foreach ($to_note as $toCheck) {
+
+                $emp = EmployeeProfile::find($toCheck);
+                $follower = User::where('id', $emp->user_id)->first();
+                $portal_follower = User::find($portal_user);
+
+                foreach ($to_note as $toAttach) {
+                    $empCheck = EmployeeProfile::find($toAttach);
+                    $to_follow = User::where('id', $empCheck->user_id)->first();
+
+                    if ($follower->id == $to_follow->id) {
+                        continue;
+
+
                     }
 
+                    if (!$to_follow->isFollowing($follower->id)) {
+                        $to_follow->follow($follower->id);
+                        $follower->notify(new UserFollowed($to_follow));
 
-                $trans_id = $request->input('trans_id'); 
-                $trans_name = $request->input('trans_name');             
- 
-                $input_value = '';
-
-                vishwaWorkflowUserMapping::where('portal_id',$portal_id)->where('workflow_id',$WorkFlow->id)->delete();
-   
-                    // dd($request->all());
-
-            foreach($request->input('trans_id') as $key => $value) 
-            {  
-                $input_value =  $key.'emp';
-                if($request->input($input_value)){
-                    foreach($request->input($input_value) as $input_key => $input_value){
-                        $vishwaWorkflowUserMapping = new vishwaWorkflowUserMapping();
-                        $vishwaWorkflowUserMapping->portal_id =  $portal_id;
-                        $vishwaWorkflowUserMapping->workflow_id =  $WorkFlow->id;
-                        $vishwaWorkflowUserMapping->Workflow_place_id = $trans_name[$key];
-                        $vishwaWorkflowUserMapping->emp_id =  $input_value;
-                        $vishwaWorkflowUserMapping->save();
                     }
-                } 
+
+                    if (!$portal_follower->isFollowing($follower->id)) {
+                        $portal_follower->follow($follower->id);
+                        $follower->notify(new UserFollowed($portal_follower));
+                    }
+                    if (!$follower->isFollowing($portal_follower->id)) {
+                        $follower->follow($portal_follower->id);
+                        $portal_follower->notify(new UserFollowed($follower));
+                    }
+                }
             }
-            $request->session()->flash('success_message','Add Employee Successfully.');             
-        }elseif(!$request->has('place_update_id') && !$request->has('trans_update_id') && !$request->has('trans_name')){
+
+
+            $request->session()->flash('success_message', 'Add Employee Successfully.');
+        } elseif (!$request->has('place_update_id') && !$request->has('trans_update_id') && !$request->has('trans_name')) {
             foreach ($request->input('place_name') as $key => $value) {
                 $place = new WorkflowPlace();
-                $place->place_name =  $value;
-                $place->workflow_id =  $WorkFlow->id;
-                $place->save(); 
+                $place->place_name = $value;
+                $place->workflow_id = $WorkFlow->id;
+                $place->save();
             }
-            $request->session()->flash('success_message','Places Add Successfully.');          
-        }else{
+            $request->session()->flash('success_message', 'Places Add Successfully.');
+        } else {
             foreach ($request->input('trans_name') as $key => $value) {
-                $trans_from_id = $request->input('trans_from_id');              
-                $trans_to_id = $request->input('trans_to_id');    
+                $trans_from_id = $request->input('trans_from_id');
+                $trans_to_id = $request->input('trans_to_id');
                 $trans = new WorkflowTransitions();
-                $trans->trans_name =  $value;
-                $trans->workflow_id =  $WorkFlow->id;
-                $trans->place_from_id =  $trans_from_id[$key];
-                $trans->place_to_id =  $trans_to_id[$key];
-                $trans->save(); 
+                $trans->trans_name = $value;
+                $trans->workflow_id = $WorkFlow->id;
+                $trans->place_from_id = $trans_from_id[$key];
+                $trans->place_to_id = $trans_to_id[$key];
+                $trans->save();
             }
-            $request->session()->flash('success_message','Transitions Add Successfully.'); 
-                 
-        } 
+            $request->session()->flash('success_message', 'Transitions Add Successfully.');
 
-        return redirect()->route('workflow.edit',$WorkFlow->name); 
-    } 
+        }
 
-     
+        return redirect()->route('workflow.edit', $WorkFlow->name);
     }
+
+
+}
 
  

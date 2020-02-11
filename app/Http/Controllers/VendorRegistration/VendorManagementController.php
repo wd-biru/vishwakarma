@@ -102,11 +102,6 @@ class VendorManagementController extends Controller
     public function store(Request $request)
     {
 
-
-
-            //dd($request->all());
-
-
             $userrole =Auth::user()->user_type;
             $email = $request->input('email');
             $company_name = $request->input('company_name');
@@ -146,10 +141,9 @@ class VendorManagementController extends Controller
             $store_login_detail->save();
             $get_user_id = User::where('email',$email)->first();
             $data1=$request->input('supplier_of');
-            $supplier = implode(',', $data1); 
+            $supplier = implode(',', $data1);
+
             $store_vendor_detali = new VishwaVendorsRegistration();
-
-
             $store_vendor_detali->user_id = $get_user_id->id;
             $store_vendor_detali->name = $request->input('name');
             $store_vendor_detali->email = $email;

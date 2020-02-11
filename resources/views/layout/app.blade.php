@@ -8,12 +8,15 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <!--bootstrap default css-->
   <link href="{{ my_asset('css/bootstrap.min.css')}}" rel="stylesheet">
+
   <!-- CSS-->
   <link rel="stylesheet" type="text/css" href="{{my_asset('css/main.css')}}">
   <link href="{{my_asset('css/style.css')}}" type="text/css" rel="stylesheet">
 
   <!-- Font-icon css-->
   <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.css">
+
     <style type="text/css">
       span.select2.select2-container.select2-container--default.select2-container--above{
          width: 100%!important;

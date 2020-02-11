@@ -297,13 +297,23 @@
                                          
                                     </td>
                                     <td>
-                                
+                                <?php
+                                $distIndent=\App\Models\VishwaPurchaseOrder::groupBY('purchase_order_no')->orderBy('id','DESC')->get();
+
+//dd($vendor_mapping,$distIndent);
+
+                                ?>  <input type="hidden" @foreach($distIndent as $dist)  value="{{$dist->vendor_id}}" @endforeach name="vendor_id[]">
                                         <select  class="form-control emp_list" type="text" readonly=""  multiple="" name="{{$i++}}emp[]">
-                                           
-                                             @foreach($emp_list as $list)
-    <option @foreach($emp_mapping as $emp_map) @if($emp_map->emp_id==$list->id && $emp_map->Workflow_place_id==$value->id) selected @endif    @endforeach value="{{$list->id}}">{{$list->first_name}} {{$list->last_name}}</option>
-                                             @endforeach
-                                                 <option value="vendor">Vendor</option>
+
+                                            @foreach($emp_list as $list)
+                                                <option @foreach($emp_mapping as $emp_map) @if($emp_map->emp_id==$list->id && $emp_map->Workflow_place_id==$value->id) selected
+                                                        @endif    @endforeach value="{{$list->id}}">{{$list->first_name}} {{$list->last_name}}</option>
+                                            @endforeach
+
+                                            <option  @foreach($distIndent as $dist)  @foreach($vendor_mapping as $emp_map)  @if($emp_map->vendor_id==$dist->vendor_id && $emp_map->Workflow_place_id==$value->id) selected
+
+                                                     @endif    @endforeach  value="vendor{{$dist->vendor_id}}" @endforeach>Vendor</option>
+
                                         </select>
                                          
                                     </td>  

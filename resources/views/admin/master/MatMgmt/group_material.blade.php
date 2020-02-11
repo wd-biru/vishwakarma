@@ -21,6 +21,31 @@
                 <h3 class="panel-title">&nbsp;Master Of Material group</h3>
             </div>
             <div class="panel-body">
+
+              <form action="{{route('master.matMgmt')}}" method="get">
+          <div class="col-md-10">
+
+                <select class=" form-control "  id="getMaterial_by_group" required="" name="group_type_id">
+                     
+                                <option value="">select Group Type</option>
+                                @foreach($group_type as  $row)
+                                <option value="{{$row->id}}">{{$row->group_type_name}}</option>
+                                @endforeach
+                
+            </select>
+                 <br>
+              </div>
+              <div class="col-md-2">
+              <button type="submit" class="btn btn-primary pull-right" style="width:100%;margin-top:1px;">
+                <i class="fa fa-search"></i>
+              </button>
+
+             </div>
+
+           </form>
+
+
+
         <form class="form-horizantol">
           <div class="form-group">
             <div class="col-md-12">
@@ -33,7 +58,7 @@
         </form><br>
 
         <div class="card col-md-12">
-          <table   class="table table-bordered  table-responsive search-table">
+          <table   class="table table-bordered  table-responsive data-table">
             <thead>
               <tr class="t-head">
                 <th>Master of Material Group</th>
@@ -109,7 +134,7 @@
         </form><br>
 
         <div class="card col-md-12">
-          <table class="table table-bordered  table-responsive search-table"   >
+          <table class="table table-bordered  table-responsive data-table"   >
             <thead>
               <tr class="t-head">
                 <th>Sr. No.</th>
@@ -146,6 +171,7 @@
                 <td>
                   <span>
                   <a class="edit_group_item" data-item_id="{{$item->id}}" data-material-name="{{$item->material_name}}" data-material-unit="{{$item->material_unit}}" data-material-description="{{$item->material_description}}"><i class="fa fa-edit"></I></a>
+                      <a href="{{route('matConfig.master',['id' => $item->id, 'materialname' => $item->material_name])}}"><i class="fa fa-cog"></i></a>
                   </span>
                 </td>
                @endforeach
@@ -184,10 +210,12 @@
               <label class="control-label col-sm-3" for="pwd">Material Unit<span style="color:red"> *</span></label>
               <div class="col-sm-8">
                 <select class="form-control" required="" id="material_unit" class="form-control check_value_ea check_name_ea" name="material_unit">
+
+
                   @if(isset($material_unit))
                       <option value="">Select Material Unit</option>
                       @foreach ($material_unit as $unit)
-                      <option value="{{ $unit->material_unit }}">{{ $unit->material_unit }}</option>
+                      <option value="{{ $unit->id }}">{{ $unit->material_unit }}</option>
                       @endforeach
                     @endif
                 </select>
@@ -243,7 +271,7 @@
                   @if(isset($material_unit))
                       <option value="">Select Material Unit</option>
                       @foreach ($material_unit as $unit)
-                      <option value="{{ $unit->material_unit }}">{{ $unit->material_unit }}</option>
+                      <option value="{{ $unit->id }}">{{ $unit->material_unit }}</option>
                       @endforeach
                     @endif
                 </select>
@@ -294,6 +322,21 @@
                 <input type="text" id="group_name" class="form-control check_value_ea check_name_ea" name="group_name" placeholder="Group"  required/><br>
                 <!-- <span id="e_status" style="color:red"> </span> -->
               </div>
+
+              <label class="control-label col-sm-3" for="pwd">Group Type<span style="color:red"> *</span></label>
+              <div class="col-sm-8">
+
+                <select class=" form-control "  name="group_type_id" required="">
+                     
+                                <option value="">select Group Type</option>
+                                @foreach($group_type as  $row)
+                                <option value="{{$row->id}}">{{$row->group_type_name}}</option>
+                                @endforeach
+                
+            </select>
+                
+              </div>
+
             </div>
           </div>
           <div class="modal-footer">
@@ -351,6 +394,14 @@
 @endsection
 @section('script')
 <script>
+$(document).ready(function() {
+    $('.data-table').DataTable({                         
+        "bInfo" : false,
+        "sDom": '<"row view-filter"<"col-sm-12"<"pull-left"l><"pull-right"f><"clearfix">>>t<"row view-pager"<"col-sm-12"<"text-center"ip>>>'
+    });
+});
+
+
 $(document).ready(function(){
     $(".editgroup").on("click", function(){
         $('#edit_group_name').val("");
@@ -381,6 +432,10 @@ $(document).ready(function(){
 
 });
 
+
+ 
+                            
+ 
 
 </script>
 

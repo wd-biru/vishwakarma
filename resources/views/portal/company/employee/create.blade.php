@@ -33,13 +33,13 @@
                              <div class="form-group">
                                 <label class="control-label col-md-4">First Name&nbsp;<span style="color: #f70b0b">*</span></label>
                                 <div class="col-md-8">
-                                    <input class="form-control" type="text" name="first_name" id="Client_name" placeholder="Enter first name" style="text-transform: capitalize" value="" required="required">
+                                    <input class="form-control" type="text" name="first_name" id="Client_name" placeholder="Enter first name" style="text-transform: capitalize" value="{{old('first_name')}}" required="required">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Last Name&nbsp;<span style="color: #f70b0b">*</span></label>
                                 <div class="col-md-8">
-                                    <input class="form-control" type="text" name="last_name" value="" placeholder="Last Name" required="required">
+                                    <input class="form-control" type="text" name="last_name" value="{{old('last_name')}}" placeholder="Last Name" required="required">
                                 </div>
                             </div>
 
@@ -59,26 +59,26 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-4">Date Of Birth <span style="color:red"> *</span></label>
                                 <div class="col-sm-8">
-                                  <input class="form-control dateofbirth datepicker" name="dob" value="" placeholder="Enter Date of Birth" required>
+                                  <input class="form-control dateofbirth datepicker" name="dob" value="{{old('dob')}}" placeholder="Enter Date of Birth" required>
                               </div>
                           </div>
                           <div class="form-group">
                             <label class="control-label col-md-4">Contact No..&nbsp;<span style="color: #f70b0b">*</span></label>
                             <div class="col-md-8">
-                                <input class="form-control" type="text" name="phone" value=""  placeholder="9999988888" required>
+                                <input class="form-control" type="text" name="phone" value="{{old('phone')}}"  placeholder="9999988888" required>
                             </div>
                         </div>
                         <div class="form-group" >
                             <label class="control-label col-md-4">Other Phone No&nbsp;<span style="color: #f70b0b">*</span></label>
                             <div class="col-md-8">
-                                <input class="form-control" type="text" name="other_phone" id="Type" placeholder=" other contact number" value="" >
+                                <input class="form-control" type="text" name="other_phone" id="Type" placeholder=" other contact number" value="{{old('other_phone')}}" >
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="control-label col-md-4">Address&nbsp;<span style="color: #f70b0b">*</span></label>
 
                             <div class="col-md-8">
-                                <textarea class="form-control" name="address" value=""></textarea>
+                                <textarea class="form-control" name="address" value="">{{old('address')}}</textarea>
                             </div>
                         </div>
                         <div class="form-group">
@@ -159,19 +159,19 @@
     <div class="form-group">
         <label class="control-label col-sm-4">Desgination Name<span style="color:red"> *</span></label>
         <div class="col-sm-8">
-           <select class="form-control" id="designation_id" name="designation_name"required >
+           <select class="form-control" id="designation_id" name="designation_name" required >
 
-                <option value="0">----------------select---------------</option>
+                <option value="">----------------select---------------</option>
 
         </select>
     </div>
 </div>
-                                <div class="form-group">
-                                <label class="control-label col-sm-4">Date of Joining <span style="color:red"> *</span></label>
-                                <div class="col-sm-8">
-                                  <input class="DisableBackDatepicker form-control" name="date_of_joining" value=""placeholder="Enter Joining Date" required>
-                              </div>
-                          </div>
+            <div class="form-group">
+            <label class="control-label col-sm-4">Date of Joining <span style="color:red"> *</span></label>
+            <div class="col-sm-8">
+              <input class="DisableBackDatepicker form-control" name="date_of_joining" value="" placeholder="Enter Joining Date" required value="{{old('date_of_joining')}}">
+          </div>
+      </div>
 </div>
 <div class="row">
     <div class="col-md-12">
@@ -183,7 +183,7 @@
         <div class="form-group">
             <label class="control-label col-sm-4">Email<span style="color:red"> *</span></label>
             <div class="col-sm-8">
-                <input class="form-control" type="email" name="email" id="Box_No"  value="" placeholder="www@email.com" required>
+                <input class="form-control" type="email" name="email" id="Box_No"  value="{{old('email')}}" placeholder="www@email.com" required>
             </div>
         </div>
     </div>
@@ -191,7 +191,7 @@
         <div class="form-group">
             <label class="control-label col-md-4">Password&nbsp;<span style="color: #f70b0b">*</span></label>
             <div class="col-sm-8">
-                <input class="form-control" type="password" name="password" id="File_No" value=""  placeholder="Enter password" required>
+                <input class="form-control" type="password" name="password" id="File_No" value="{{old('password')}}"  placeholder="Enter password" required>
             </div>
         </div>
     </div>
@@ -228,7 +228,6 @@
 @endsection
 
 @section('script')
-
 <script type="text/javascript">
     // $('#chkDirect1').prop('checked', false);
     // document.getElementById("#chkDirect1").checked = false;
@@ -258,7 +257,7 @@ $(document).ready(function() {
         var op = " ";
         var _token = $('input[name="_token"]').val();
         $.ajax({
-            type: 'get',    
+            type: 'get',
             url: "{{route('findDesignationsData')}}",
             data: {'id': dept_id},
             success: function (data) {

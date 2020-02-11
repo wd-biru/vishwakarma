@@ -24,4 +24,15 @@ class VishwaIndentVendorsPrice extends Model
         return  $this->belongsTo(Indent::class,'indent_id','indent_id');
     }
 
+
+    public function getRentablePrice()
+    {
+        return  $this->hasMany(VishwaNonRentablePrice::class,'indent_id','indent_id');
+    }
+
+    public function getNonRentablePrice()
+    {
+        return  $this->hasMany(VishwaRentablePrice::class,'indent_id','indent_id');
+    }
+
 }

@@ -4,10 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Auth;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class EmployeeProfile extends Model
 {
     protected $table="vishwa_employee_profile";
+    use SoftDeletes;
+
+    protected $dates = ['deleted_at'];
+    protected $appends = ['complete_name'];
+    public function getCompleteNameAttribute()
+    {
+        return $this->attributes['first_name'].
+            ' ' . $this->attributes['last_name'];
+    }
 
     public function getUserDetails()
     {

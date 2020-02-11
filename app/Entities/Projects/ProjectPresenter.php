@@ -2,12 +2,19 @@
 
 namespace App\Entities\Projects;
 
+use App\Models\VishwaProjectStore;
 use Laracasts\Presenter\Presenter;
 use ProjectStatus;
 
 class ProjectPresenter extends Presenter
 {
-  
+
+
+    public function store_name()
+    {
+        $store_name=VishwaProjectStore::where('project_id',$this->id)->first();
+        return $store_name->store_name;
+    }
 
     public function projectLink()
     {

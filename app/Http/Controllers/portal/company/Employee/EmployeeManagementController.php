@@ -35,16 +35,7 @@ class EmployeeManagementController extends Controller
     {
       $portal_id = Auth::user()->getPortal->id;
 
-      // $employee_list = EmployeeProfile::where('portal_id',$portal_id)->get();
-
-
-
-        $employee_list = DB::table('vishwa_employee_profile')->where('portal_id',$portal_id)
-            ->get();
-
-          //  dd($employee_list);
-
-
+       $employee_list = EmployeeProfile::where('portal_id',$portal_id)->get();
 
       return view('portal.company.employee.index',compact('employee_list'));
     }
@@ -390,12 +381,16 @@ class EmployeeManagementController extends Controller
       $id = $request->input('update_id');
       $phone =  $request->input('phone');
       $user_id = $request->input('user_id');
+
+
+
+
       $validator = Validator::make($request->all(),[
         'first_name' => 'bail|required|regex:/^[\pL\s\-]+$/u',
         'last_name' => 'required|regex:/^[\pL\s\-]+$/u',
         'gender'=>'required',
         'email' => 'required|email|unique:users,email,'.$user_id,
-        'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:10|unique:users,mobile_no,'.$user_id,
+        'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:10|',
         'other_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:10',
         'address' => 'required',
         'status' => 'required|max:2',
@@ -406,6 +401,9 @@ class EmployeeManagementController extends Controller
         'date_of_joining'=>'required',
 
       ]);
+
+
+
       if ($validator->fails()) {
         return redirect()->back()->withErrors($validator)->withInput();
       }
@@ -488,15 +486,14 @@ class EmployeeManagementController extends Controller
     }
 
     /**
-     * @return \Illuminate\Support\Collection
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
 
     public function export()
     {
-       //return "abc";
 
         return Excel::download(new EmployeeExport, 'EmployeeProfile.xls');
-//            return new EmployeeExport();
+
     }
 
     /**

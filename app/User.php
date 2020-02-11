@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\Portal;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Auth;
 class User extends Authenticatable
 {
     use Notifiable;
+    use SoftDeletes;
+
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
@@ -62,6 +66,9 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\Models\EmployeeProfile','user_id','id');
     }
+
+
+
         public function projects()
     {
         return $this->belongsToMany('App\Entities\Projects\Project', 'jobs', 'worker_id')
@@ -179,6 +186,44 @@ class User extends Authenticatable
 
 
     }
+
+
+
+    //notification related functions and relations//
+
+    public function followers()
+    {
+        return $this->belongsToMany(self::class, 'followers', 'follows_id', 'user_id')
+            ->withTimestamps();
+    }
+
+    public function follows()
+    {
+        return $this->belongsToMany(self::class, 'followers', 'user_id', 'follows_id')
+            ->withTimestamps();
+    }
+
+    public function follow($userId)
+    {
+        $this->follows()->attach($userId);
+        return $this;
+    }
+
+    public function unfollow($userId)
+    {
+
+        $this->follows()->detach([$userId]);
+        return $this;
+    }
+
+    public function isFollowing($userId)
+    {
+        return (boolean) $this->follows()->where('follows_id', $userId)->first(["users.id"]);
+    }
+
+
+    //end//
+
 
 
 }

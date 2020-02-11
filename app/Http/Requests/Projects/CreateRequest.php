@@ -36,7 +36,7 @@ class CreateRequest extends Request
     public function messages()
     {
         return [
-            'customer_name.required_without'  => 'Nama Customer.',
+            'customer_name.required_without'  => 'Name Customer.',
             'customer_email.required_without' => 'Email Customer.',
         ];
     }

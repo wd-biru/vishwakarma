@@ -197,7 +197,7 @@ th{border:1px solid #d4d4d4; }
     <td>&nbsp;</td>
     <td><span class="move-right">{{number_format($tax + $fright_charge_tax, 2)}}</span></td>
     <?php        
-           DB::table('vishwa_purchase_order')->where('purchase_order_no',$purchase_order_no)->update(['cgst'=>$tax]);
+           DB::table('vishwa_purchase_order')->join('vishwa_purchase_order_item', 'vishwa_purchase_order.id', 'vishwa_purchase_order_item.order_map_id')->where('purchase_order_no',$purchase_order_no)->update(['cgst'=>$tax]);
     ?>
   </tr>
   <tr>
@@ -211,9 +211,9 @@ th{border:1px solid #d4d4d4; }
     <td>&nbsp;</td>
     <td><span class="move-right">{{number_format($tax + $fright_charge_tax, 2)}}</span></td>
         <?php
-       
-           DB::table('vishwa_purchase_order')->where('purchase_order_no',$purchase_order_no)->update(['sgst'=>$tax]);
-        
+
+      DB::table('vishwa_purchase_order')->join('vishwa_purchase_order_item', 'vishwa_purchase_order.id', 'vishwa_purchase_order_item.order_map_id')->where('purchase_order_no',$purchase_order_no)->update(['sgst'=>$tax]);
+
          ?>
 
   </tr>
@@ -229,8 +229,8 @@ th{border:1px solid #d4d4d4; }
     <td>&nbsp;</td>
     <td><span class="move-right">{{number_format($tax + $fright_charge_tax, 2)}}</span></td>
     <?php
+        DB::table('vishwa_purchase_order')->join('vishwa_purchase_order_item', 'vishwa_purchase_order.id', 'vishwa_purchase_order_item.order_map_id')->where('purchase_order_no',$purchase_order_no)->update(['igst'=>$tax]);
 
-           DB::table('vishwa_purchase_order')->where('purchase_order_no',$purchase_order_no)->update(['igst'=>$tax]);
      ?>
   </tr>
 

@@ -16,11 +16,10 @@
 @include('includes.msg')
 @include('includes.validation_messages')
 
-
  <div class="row">
       <div  class="col-md-12">
         <div class="content-section">              
-                        <form  action="{{route('getChallanData')}}" method="post">
+                        <form  action="{{route('getChallanData')}}" method="get">
                              {{ csrf_field() }}
                              <div class="row">
                                 <div class="col-md-2">
@@ -52,8 +51,6 @@
                     </form>
              </div>
         </div>
-
-
 </div>
 
 

@@ -19,6 +19,8 @@ class Controller extends BaseController
 
         $WorkFlow = WorkFlowMaster::where('name',$name)->first();
 
+
+
         if($WorkFlow != null && $WorkFlow->getPlace != null && $WorkFlow->getTransaction != null): 
           foreach ($WorkFlow->getPlace as $key => $value) {
               $place[]=$value->place_name; 
@@ -55,6 +57,91 @@ class Controller extends BaseController
     }
 
     public static function getPoWorkFlow($object, $name)
+    {
+
+        $WorkFlow = WorkFlowMaster::where('name',$name)->first();
+
+        if($WorkFlow != null && $WorkFlow->getPlace != null && $WorkFlow->getTransaction != null):
+            foreach ($WorkFlow->getPlace as $key => $value) {
+                $place[]=$value->place_name;
+            }
+            foreach ($WorkFlow->getTransaction as $key => $value) {
+                $transitions[$value->trans_name]['from']= $value->getPlaceFrom->place_name;
+                $transitions[$value->trans_name]['to']= $value->getPlaceTo->place_name;
+            }
+
+
+
+            $config  = [ $WorkFlow->name => [
+                'type'          => 'workflow', // or 'state_machine'
+                'marking_store' => [
+                    'type'      => 'single_state',
+                    'arguments' => [$WorkFlow->arguments] // currentPlace
+                ],
+                'supports'      => [$WorkFlow->supports], //"APP\MODELS\NAME"
+                'places'        =>  $place ,
+                'transitions'   => $transitions,
+            ]
+            ];
+        else:
+            return false;
+        endif;
+
+
+
+        $workflowRegistry = new WorkflowRegistry($config);
+
+//        dd($object);
+
+        return $workflowRegistry->get($object, $WorkFlow->name);
+    }
+
+
+    public static function getMReqWorkFlow($object, $name)
+    {
+
+
+        $WorkFlow = WorkFlowMaster::where('name',$name)->first();
+
+
+
+        if($WorkFlow != null && $WorkFlow->getPlace != null && $WorkFlow->getTransaction != null):
+            foreach ($WorkFlow->getPlace as $key => $value) {
+                $place[]=$value->place_name;
+            }
+            foreach ($WorkFlow->getTransaction as $key => $value) {
+                $transitions[$value->trans_name]['from']= $value->getPlaceFrom->place_name;
+                $transitions[$value->trans_name]['to']= $value->getPlaceTo->place_name;
+            }
+
+
+
+            $config  = [ $WorkFlow->name => [
+                'type'          => 'workflow', // or 'state_machine'
+                'marking_store' => [
+                    'type'      => 'single_state',
+                    'arguments' => [$WorkFlow->arguments] // currentPlace
+                ],
+                'supports'      => [$WorkFlow->supports], //"APP\MODELS\NAME"
+                'places'        =>  $place ,
+                'transitions'   => $transitions,
+            ]
+            ];
+        else:
+            return false;
+        endif;
+
+
+
+        $workflowRegistry = new WorkflowRegistry($config);
+
+//        dd($object);
+
+
+        return $workflowRegistry->get($object, $WorkFlow->name);
+    }
+
+    public static function getMRecWorkFlow($object, $name)
     {
 
         $WorkFlow = WorkFlowMaster::where('name',$name)->first();

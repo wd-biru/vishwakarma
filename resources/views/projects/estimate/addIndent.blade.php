@@ -21,78 +21,94 @@
 
 @section('content')
 
-        <div class="row">
-            <div class="col-md-5">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">&nbsp;Select Store Name</h3><br>
+    <div class="row">
+        <div class="col-md-5">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">&nbsp;Select Item type</h3><br>
+                    <select name="item_type" id="get_store_by_item_type"
+                            class="form-control get_store_by_item_type selectable" required>
+                        <option value="">select Group Type</option>
+                        @foreach($group_type as  $row)
+                            <option value="{{$row->id}}">{{$row->group_type_name}}</option>
+                        @endforeach
+                    </select>
 
-                            <select name="store_name" class="form-control store selectable" required>
-                                <option value="">Select Store Name</option> 
-                             @if(Auth::user()->user_type == 'employee')
-                                @foreach($store_detail as $store)
-                                    
-                                    <option value="{{$store->store_id}}">{{$store->store_name}}</option>
-                                @endforeach
-                            @else
-                                @foreach($store_detail as $store)
-                                    <option value="{{$store->id}}">{{$store->store_name}}</option>
-                                @endforeach
 
-                            @endif
-                            </select>
-                            <br>
-                            <br>
-                        <h3 class="panel-title">Select Material Group</h3><br>
-                        <select name="department_data" class="form-control selectable"   id="getMaterialList" class="getMaterialList" >
-                            <option value="">Select Material Group</option>
-                            @foreach($material_group as $material)
-                                <option value="{{$material->id}}">{{$material->group_name}}</option>
+                </div>
+
+
+                <div class="panel-heading hide_store_div">
+                    <h3 class="panel-title">&nbsp;Select Store Name</h3><br>
+
+                    <select disabled name="store_name" class="form-control store selectable" required
+                            id="project_Store_select">
+                        <option value="">Select Store Name</option>
+                        @if(Auth::user()->user_type == 'employee')
+                            @foreach($store_detail as $store)
+
+                                <option value="{{$store->store_id}}">{{$store->store_name}}</option>
                             @endforeach
-                        </select>
-                    </div>
-                    <div class="panel-body">
-                        <div class="card col-md-12 ">
-                            <div class="table-responsive">  
-                                <table class="table table-bordered table-hover search-table" id="freshStoreGroup">
-                                    <thead>
-                                    <tr class="t-head">
-                                        <th>Material Name </th>
-                                        <th>Material Unit</th>
-                                        <th>Select</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="storeGroup">
+                        @else
+                            @foreach($store_detail as $store)
+                                <option value="{{$store->id}}">{{$store->store_name}}</option>
+                            @endforeach
+
+                        @endif
+                    </select>
+                    <br>
+                    <br>
+                    <h3 class="panel-title">Select Material Group</h3><br>
+                    <select name="department_data" class="form-control selectable" id="getMaterialList" disabled
+                            class="getMaterialList">
+                        <option value="">Select Material Group</option>
+                        @foreach($material_group as $material)
+                            <option value="{{$material->id}}">{{$material->group_name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="panel-body">
+                    <div class="card col-md-12 ">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover search-table" id="freshStoreGroup">
+                                <thead>
+                                <tr class="t-head">
+                                    <th>Material Name</th>
+                                    <th>Material Unit</th>
+                                    <th>Select</th>
+                                </tr>
+                                </thead>
+                                <tbody id="storeGroup">
 
 
-
-                                    </tbody>
-                                </table>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
-
                     </div>
+
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-7 show-data">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">&nbsp;Selected Indent Allocation</h3><br>
+        <div class="col-md-7 show-data">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">&nbsp;Selected Indent Allocation</h3><br>
                     {!! Form::model($project, ['route' => ['indentResorurce.store', $project->id], 'method' => 'post' ]) !!}
                     <div class="panel-body">
                         <div class="card col-md-12">
                             <div class="table-responsive">
                                 {{ csrf_field() }}
-                                <table class="table table-bordered table-hover" id="freshitemRequired" style="margin-top: 50px" >
+                                <table class="table table-bordered table-hover" id="freshitemRequired"
+                                       style="margin-top: 50px">
                                     <thead>
                                     <tr class="t-head">
-                                        <th>Material Name </th>
+                                        <th>Material Name</th>
                                         <th>Material Unit</th>
                                         <th>Qty</th>
                                         <th>Remarks (optional)</th>
                                         <th></th>
-                                  
+
                                     </tr>
                                     </thead>
 
@@ -101,23 +117,28 @@
 
                                     </tbody>
 
-                                </table >
+                                </table>
 
-                         
 
                             </div>
                         </div>
-                                <div  id="button_submit" >
-                                    <button type="submit" style="float: right;"  class="btn btn-primary">Submit</button>
-                                </div>
-                               
-
-                       </div>
-                             {!! Form::close() !!}
+                        <div>
+                            <button style="float: right;" class="btn btn-danger" id="button_reset">Reset</button>
                         </div>
-                      </div>
+                        <div id="button_submit">
+                            <button type="submit" style="float: right;" class="btn btn-primary" disabled
+                                    id="submitIndent">Submit
+                            </button>
+                        </div>
+
+
                     </div>
-                </div> 
+                    {!! Form::close() !!}
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 @endsection
@@ -126,50 +147,53 @@
     <script>
 
 
+        $(document).ready(function () {
 
-        
-
-        $(document).ready(function() {
+            $('#button_reset').click(function () {
+               window.location.reload();
+            });
 
 
             $('#getMaterialList').on('change', function () {
                 var group_id = $(this).val();
+                var group_type_id = $('.get_store_by_item_type option:selected').val();
                 $.ajax({
                     url: "{{route('getItemList',[$project->id])}}",
                     type: 'post',
-                    data: {"group_id": group_id,                      
-                    "_token": "{{ csrf_token() }}"},
-                    success: function (data) { 
+                    data: {
+                        "group_id": group_id,
+                        "group_type_id": group_type_id,
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    success: function (data) {
                         $("#freshStoreGroup").DataTable().destroy();
 
-            
-                    var table_body = '<table border="1">';
-                    for(var i=0;i<data.length;i++)
-                    {
+                        var table_body = '<table border="1">';
+                        for (var i = 0; i < data.length; i++) {
 
-                        table_body+='<tr>';
-                            table_body +='<td>';
-                            table_body +=' <input type="hidden" name="'+data[i].group_id+'" id="group_id"/>';
-                            table_body +=' <input type="hidden" name="'+ data[i].id +'" id="req_item_id"/>';
-                            table_body +=' <label  id="mat_name" />'+data[i].material_name+'</label>';
-                            table_body +='</td>';
+                            table_body += '<tr>';
+                            table_body += '<td>';
+                            table_body += ' <input type="hidden" name="' + data[i].group_id + '" id="group_id"/>';
+                            table_body += ' <input type="hidden" name="' + data[i].id + '" id="req_item_id"/>';
+                            table_body += ' <label  id="mat_name" />' + data[i].material_name + '</label>';
+                            table_body += '</td>';
 
-                        table_body +='<td>';
-                        table_body +='<label  id="mat_unit"/>'+data[i].material_unit+'</label>';
-                        table_body +='</td>';
+                            table_body += '<td>';
+                            table_body += '<label  id="mat_unit"/>' + data[i].material_unit + '</label>';
+                            table_body += '</td>';
 
-                        table_body +='<td>';
-                        table_body +=' <input type="checkbox" onchange="doalert(this);" class="chkclick" value="'+data[i].id+'"name="itemDetails" id="chkListItem" />';
-                        table_body +='</td>';
+                            table_body += '<td>';
+                            table_body += ' <input type="checkbox" onchange="doalert(this);" class="chkclick" value="' + data[i].id + '"name="itemDetails" id="chkListItem" />';
+                            table_body += '</td>';
 
-                        table_body+='</tr>';
+                            table_body += '</tr>';
+                        }
+                        table_body += '</table>';
+                        $('#storeGroup').html(table_body);
+                        $('#freshStoreGroup').DataTable();
+
+
                     }
-                    table_body+='</table>';
-                    $('#storeGroup').html(table_body);
-                    $('#freshStoreGroup').DataTable();
-                    
-
-                }
 
                 });
 
@@ -177,63 +201,98 @@
         });
 
         function doalert(checkboxElem) {
-           
-           var  checked_id=checkboxElem.value;
-           var store_id   = $('.store option:selected').val();  
+
+            $('#getMaterialList').attr('disabled', true)
+            $('#submitIndent').attr('disabled', false)
+            var checked_id = checkboxElem.value;
+            var store_id = $('.store option:selected').val();
             if (checkboxElem.checked) {
-              // $("#freshitemRequired").DataTable();
-                $(document).on('change','input:checkbox[value="'+checked_id+'"]',function(){
-                    $(this).prop('disabled',true);
+                // $("#freshitemRequired").DataTable();
+                $(document).on('change', 'input:checkbox[value="' + checked_id + '"]', function () {
+                    $(this).prop('disabled', true);
                 });
 
                 $.ajax({
                     url: "{{route('getOneItemList',[$project->id])}}",
                     type: 'post',
-                    data: {"item_id": checked_id,
-                        "_token": "{{ csrf_token() }}"},
-                        
+                    data: {
+                        "item_id": checked_id,
+                        "_token": "{{ csrf_token() }}"
+                    },
+
                     success: function (data) {
-                        var str = '<tr id="remove_'+data[0].id+'"><td>' + data[0].material_name + '' +
-                            '<input type="hidden" value="'+data[0].material_name+'" name="material_name[]"/></td>' +
+                        var str = '<tr id="remove_' + data[0].id + '"><td>' + data[0].material_name + '' +
+                            '<input type="hidden" value="' + data[0].material_name + '" name="material_name[]"/></td>' +
                             '<td>' + data[0].material_unit + '' +
-                            '<input type="hidden" value="'+data[0].material_unit+'" name="material_unit[]"/></td>' +
-                            '<td><input type="hidden" value="'+data[0].group_id+'" name="group_id[]"/> ' +
-                            '<input type="hidden" value="'+data[0].id+'" name="item_id[]"/>' +
+                            '<input type="hidden" value="' + data[0].material_unit + '" name="material_unit[]"/></td>' +
+                            '<td><input type="hidden" value="' + data[0].group_id + '" name="group_id[]"/> ' +
+                            '<input type="hidden" value="' + data[0].id + '" name="item_id[]"/>' +
                             '<input type="number" class="maty" name="qty[]" id="qty_id" min="1" required /></td>' +
-                            '<input type="hidden" class="store" name="store_id" id="store_id" value="'+store_id+'" /></td>' +
-                            '<td><input type="text" name="remarks[]" id="remarks_id"/></td>'+
-                            '<td> <button type="button" class="form-control remove-entry btn btn-danger" value='+data[0].id+'><i class="fa fa-trash"></i></button></td>'+
+                            '<input type="hidden" class="store" name="store_id" id="store_id" value="' + store_id + '" /></td>' +
+                            '<td><input type="text" name="remarks[]" id="remarks_id"/></td>' +
+                            '<td> <button type="button" class="form-control remove-entry btn btn-danger" value=' + data[0].id + '><i class="fa fa-trash"></i></button></td>' +
                             '</tr>';
 
                         $('#itemRequired').append(str);
-                       // $('#freshitemRequired').DataTable();
-                       // $('#freshitemRequired').DataTable();
-                        
+                        // $('#freshitemRequired').DataTable();
+                        // $('#freshitemRequired').DataTable();
+
 
                     }
                 });
             }
-                    else {
+            else {
 
-                    }
+            }
         }
 
- 
 
-         jQuery(document).on('click','.remove-entry',function()
-         { 
-            var for_remove_slip_details_no =  jQuery(this).val(); 
-             
-              $('input[type=checkbox]').each(function () 
-              {
-                       if (this.value==for_remove_slip_details_no) {
-                          $(this).removeAttr('checked');
-                            this.disabled = false;
-                       }
-            }); 
+        jQuery(document).on('click', '.remove-entry', function () {
+            var for_remove_slip_details_no = jQuery(this).val();
 
-               jQuery('#remove_'+for_remove_slip_details_no).remove();
-         });
+            $('input[type=checkbox]').each(function () {
+                if (this.value == for_remove_slip_details_no) {
+                    $(this).removeAttr('checked');
+                    this.disabled = false;
+                }
+            });
+
+            jQuery('#remove_' + for_remove_slip_details_no).remove();
+        });
+
+
+        $(document).ready(function () {
+
+            $('#project_Store_select').on('change', function () {
+                $('#getMaterialList').attr('disabled', false)
+            });
+
+
+            $('#get_store_by_item_type').on('change', function () {
+
+                var group_type_id = $(this).val();
+                $('#project_Store_select').attr('disabled', false)
+
+                $.ajax({
+                    url: "{{route('getMaterialGroup')}}",
+                    type: 'post',
+                    data: {
+                        "group_type_id": group_type_id,
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    success: function (data) {
+
+                        $("#getMaterialList").empty();
+                        $("#getMaterialList").append('<option>Select Material Group</option>');
+                        $.each(data, function (key, value) {
+                            $("#getMaterialList").append('<option value="' + key + '">' + value + '</option>');
+                        });
+                    }
+
+
+                });
+            });
+        });
 
     </script>
 

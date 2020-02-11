@@ -76,60 +76,145 @@ class IndentMaster extends Model
 
     public function getPriceAginstEachVendor($pVendorId,$pIndentId,$pItemId,$InputUserPrice=null)
     {      
-        $retVal = false;  $l1Total = $l2Total = null;
+        $retRentVal = false;  $l1Total = $l2Total = null;$retNonRentVal = false;
         if(isset($pVendorId) && isset($pIndentId) && isset($pItemId)){
-            $getPrice = VishwaIndentVendorsPrice::where('vendor_id',$pVendorId)->where('indent_id',$pIndentId)->where('item_id',$pItemId)->first();
-            $AllQuoteDataForLowest = VishwaIndentVendorsPrice::where('indent_id',$pIndentId)->where('item_id',$pItemId)->groupBy('price')->orderBy('price','ASC')->get();
+
+
+
+            $getIndentType=VishwaIndentVendorsPrice::where('indent_id',$pIndentId)->first();
+            $getGroupTypeOne=VishwaRentablePrice::where('indent_map_id',$getIndentType->id)->first();
+            $getGroupTypeTwo=VishwaNonRentablePrice::where('indent_map_id',$getIndentType->id)->first();
+
+
+
+            if($getGroupTypeOne != null)
+            {
+                $getPrice = VishwaIndentVendorsPrice::join('vishwa_indent_vendor_rentable_price','vishwa_indent_vendor_price.id','vishwa_indent_vendor_rentable_price.indent_map_id')
+                ->where('vendor_id',$pVendorId)->where('vishwa_indent_vendor_price.indent_id',$pIndentId)->where('vishwa_indent_vendor_rentable_price.item_id',$pItemId)->first();
+                $AllQuoteDataForLowest = VishwaRentablePrice::where('indent_map_id',$getIndentType->id)->where('item_id',$pItemId)->groupBy('per_day_price')->orderBy('per_day_price','ASC')->get();
 
                 if(count($AllQuoteDataForLowest)>0 ){
-                    $l1Total = $AllQuoteDataForLowest[0]->price;
+                    $l1Total = $AllQuoteDataForLowest[0]->per_day_price;
                     if(count($AllQuoteDataForLowest)>=2 ){
-                        $l2Total = $AllQuoteDataForLowest[1]->price;
+                        $l2Total = $AllQuoteDataForLowest[1]->per_day_price;
                     }
                 }
 
-            if($getPrice==null){
+                if($getPrice==null){
 
-                 //dd( $l1Total,$l2Total,$AllQuoteDataForLowest);
-                $getPrice = ['lowest'=>'','LowColor'=>''];
-                if($l1Total != null && $InputUserPrice <= $l1Total){
-                    $getPrice['lowest'] = "L1";
-                    $getPrice['LowColor'] = "red";
-                }elseif($l2Total != null || $l2Total == null &&  ($l1Total > $InputUserPrice) <= $l2Total){
-                    $getPrice['lowest'] = "L2";
-                    $getPrice['LowColor'] = "green";
-                }elseif($l2Total != null &&  ($l2Total >=$InputUserPrice) <= $l1Total){
-                    $getPrice['lowest'] = "L2";
-                    $getPrice['LowColor'] = "green";
-                }
-                 else{
-                    $getPrice['lowest'] = "L1";
-                    $getPrice['LowColor'] = "red";
-                } 
-                if($InputUserPrice!=null){
-                    $retVal = $getPrice;
-                }else{
-                    $retVal = false;
-                }                
-            }else{          
-                if($l1Total != null && $getPrice->price <= $l1Total){
-                    $getPrice->lowest = "L1";
-                    $getPrice->LowColor = "red";
-                }elseif($l2Total != null &&  $l2Total >= $l1Total) {
-                    $getPrice['lowest'] = "L2";
-                    $getPrice['LowColor'] = "green";
-                }elseif($l2Total != null && $getPrice->price == $l2Total){
-                    $getPrice->lowest = "L2";
-                    $getPrice->LowColor = "green";
+                    //dd( $l1Total,$l2Total,$AllQuoteDataForLowest);
+                    $getPrice = ['lowest'=>'','LowColor'=>''];
+                    if($l1Total != null && $InputUserPrice <= $l1Total){
+                        $getPrice['lowest'] = "L1";
+                        $getPrice['LowColor'] = "red";
+                    }elseif($l2Total != null || $l2Total == null &&  ($l1Total > $InputUserPrice) <= $l2Total){
+                        $getPrice['lowest'] = "L2";
+                        $getPrice['LowColor'] = "green";
+                    }elseif($l2Total != null &&  ($l2Total >=$InputUserPrice) <= $l1Total){
+                        $getPrice['lowest'] = "L2";
+                        $getPrice['LowColor'] = "green";
+                    }
+                    else{
+                        $getPrice['lowest'] = "L1";
+                        $getPrice['LowColor'] = "red";
+                    }
+                    if($InputUserPrice!=null){
+                        $retRentVal = $getPrice;
+                    }else{
+                        $retRentVal = false;
+                    }
                 }
                 else{
-                    $getPrice->lowest = "";
-                    $getPrice->LowColor = "fff";
-                }  
-                $retVal = $getPrice; 
-            }  
-        }  
+                    if($l1Total != null && $getPrice->per_day_price <= $l1Total){
+                        $getPrice->lowest = "L1";
+                        $getPrice->LowColor = "red";
+                    }elseif($l2Total != null &&  $l2Total >= $l1Total) {
+                        $getPrice['lowest'] = "L2";
+                        $getPrice['LowColor'] = "green";
+                    }elseif($l2Total != null && $getPrice->per_day_price == $l2Total){
+                        $getPrice->lowest = "L2";
+                        $getPrice->LowColor = "green";
+                    }
+                    else{
+                        $getPrice->lowest = "";
+                        $getPrice->LowColor = "fff";
+                    }
+                    $retRentVal = $getPrice;
+                }
 
-        return $retVal;
+
+            }
+
+           if($getGroupTypeTwo != null)
+           {
+               $getPrice = VishwaIndentVendorsPrice::join('vishwa_indent_vendor_non_rentable_price','vishwa_indent_vendor_price.id','vishwa_indent_vendor_non_rentable_price.indent_map_id')
+                   ->where('vendor_id',$pVendorId)->where('vishwa_indent_vendor_price.indent_id',$pIndentId)->where('vishwa_indent_vendor_non_rentable_price.item_id',$pItemId)->first();
+               $AllQuoteDataForLowest = VishwaNonRentablePrice::where('indent_map_id',$getIndentType->id)->where('item_id',$pItemId)->groupBy('price')->orderBy('price','ASC')->get();
+
+               if(count($AllQuoteDataForLowest)>0 ){
+                   $l1Total = $AllQuoteDataForLowest[0]->price;
+                   if(count($AllQuoteDataForLowest)>=2 ){
+                       $l2Total = $AllQuoteDataForLowest[1]->price;
+                   }
+               }
+
+               if($getPrice==null){
+
+                   //dd( $l1Total,$l2Total,$AllQuoteDataForLowest);
+                   $getPrice = ['lowest'=>'','LowColor'=>''];
+                   if($l1Total != null && $InputUserPrice <= $l1Total){
+                       $getPrice['lowest'] = "L1";
+                       $getPrice['LowColor'] = "red";
+                   }elseif($l2Total != null || $l2Total == null &&  ($l1Total > $InputUserPrice) <= $l2Total){
+                       $getPrice['lowest'] = "L2";
+                       $getPrice['LowColor'] = "green";
+                   }elseif($l2Total != null &&  ($l2Total >=$InputUserPrice) <= $l1Total){
+                       $getPrice['lowest'] = "L2";
+                       $getPrice['LowColor'] = "green";
+                   }
+                   else{
+                       $getPrice['lowest'] = "L1";
+                       $getPrice['LowColor'] = "red";
+                   }
+                   if($InputUserPrice!=null){
+                       $retNonRentVal = $getPrice;
+                   }else{
+                       $retNonRentVal = false;
+                   }
+               }
+               else{
+                   if($l1Total != null && $getPrice->price <= $l1Total){
+                       $getPrice->lowest = "L1";
+                       $getPrice->LowColor = "red";
+                   }elseif($l2Total != null &&  $l2Total >= $l1Total) {
+                       $getPrice['lowest'] = "L2";
+                       $getPrice['LowColor'] = "green";
+                   }elseif($l2Total != null && $getPrice->price == $l2Total){
+                       $getPrice->lowest = "L2";
+                       $getPrice->LowColor = "green";
+                   }
+                   else{
+                       $getPrice->lowest = "";
+                       $getPrice->LowColor = "fff";
+                   }
+                   $retNonRentVal = $getPrice;
+               }
+
+           }
+
+
+        }
+
+        if($getGroupTypeTwo != null)
+        {
+            return $retNonRentVal;
+        }
+        else
+        {
+            return $retRentVal;
+        }
+
+
+
     }
 }

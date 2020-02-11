@@ -71,8 +71,8 @@
         <div class="col-md-2 date_change">
           <label>To Date</label>
           <input type="text" class="datetimepicker form-control" autocomplete="off" @if($to_date_input!=0) value="{{$to_date_input}}" @endif  id="to" required>
-        </div> 
-        
+        </div>
+
 
         <div class="col-md-1"> 
           <label>&nbsp;</label>
@@ -164,7 +164,7 @@
 
   function tranferhtmldatatable(){
 
-                return '<table id="godownedit" class="display" style="width:95%;"><thead class="heading btn-primary"><tr><th>Transition Date</th><th>Item Name</th><th >Qty</th><th>Action</th></tr></thead><tbody id="godownlistning"></tbody></table>';
+                return '<table id="godownedit" class="display" style="width:95%;"><thead class="heading btn-primary"><tr><th>Transition Date</th><th>Item Name</th><th >Qty</th><!--<th>Action</th>--></tr></thead><tbody id="godownlistning"></tbody></table>';
 
               }
 
@@ -192,9 +192,16 @@
           for(var i=0;i < result.data.length;i++){
            if(result.data[i].qty!=0){
              if(result.data[i].sumqty==null){
-            godown_items+=' <tr id="'+result.data[i].id+'"><td>'+new Date(result.data[i].transition_date).toString('dd-MM-yyyy')+'</td><td>'+result.data[i].material_name+'</td><td style="text-align: left;">'+Math.abs(result.data[i].qty)+'</td><td  style="text-align: left;"><div class="btn-group"><button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"> <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>Action</button><ul class="dropdown-menu" role="menu"><li><a onclick="appenddata('+result.data[i].id+','+result.data[i].qty+');" >Edit</a></li><li><a id="'+result.data[i].id+'" data-itemqty="'+result.data[i].qty+'" class="class-btn-delete-list">Delete</a></li></ul></div></td></tr>';
+            godown_items+=' <tr id="'+result.data[i].id+'"><td>'+new Date(result.data[i].created_at).toString('dd-MM-yyyy')+'</td><td>'+result.data[i].material_name+'</td><td style="text-align: left;">'+Math.abs(result.data[i].qty)+'</td>'+
+
+            '<!--<td  style="text-align: left;"><div class="btn-group"><button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"> <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span>Action</button><ul class="dropdown-menu" role="menu"><li><a onclick="appenddata('+result.data[i].id+','+result.data[i].qty+');" >Edit</a></li><li><a id="'+result.data[i].id+'" data-itemqty="'+result.data[i].qty+'" class="class-btn-delete-list">Delete</a></li></ul></div></td>-->'
+
+            +'</tr>';
           }else{
-            godown_items+=' <tr id="'+result.data[i].id+'"><td>'+new Date(result.data[i].transition_date).toString('dd-MM-yyyy')+'</td><td>'+result.data[i].material_name+'</td><td style="text-align: left;">'+result.data[i].qty+'</td><td  style="text-align: left;"><div class="btn-group"><button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"> <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span> </button><ul class="dropdown-menu" role="menu"></ul></div></td></tr>';
+            godown_items+=' <tr id="'+result.data[i].id+'"><td>'+new Date(result.data[i].created_at).toString('dd-MM-yyyy')+'</td><td>'+result.data[i].material_name+'</td><td style="text-align: left;">'+result.data[i].qty+'</td>'+
+
+            '<!--<td  style="text-align: left;"><div class="btn-group"><button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"> <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span> </button><ul class="dropdown-menu" role="menu"></ul></div></td>-->'+
+            '</tr>';
 
           }
           }
@@ -334,7 +341,6 @@ $('#MymodalDelEdit').modal('show');
 
      $("#upqty").click(function(){
  
-
           var id=$('#qty-id').val();
           var qty=$('#qty-list').val();
                

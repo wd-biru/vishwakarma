@@ -34,7 +34,7 @@ th{border:1px solid #d4d4d4; }
 
 
 
-<p><span><strong>M.R. No.</strong><?php echo($mr_reciept) ?></span><span style="float:right"><strong>Date:</strong>{{$mr_date}}</span></p>
+<p><span><strong>M.R. No.</strong><?php echo($mr_receipt_no) ?></span><span style="float:right"><strong>Date:</strong>{{$mr_date}}</span></p>
 <p><strong>Name Of Supplier & Address:</strong> {{$vendor_data->vendor_com_name}}</p>
 <p><span><strong>Mode Of Transport:  </strong> Truck (22 Tyer)</span><span style="float:right"><strong>Vechicle No.:</strong>{{$vendor_data->tracker_no}}</span></p>
 <p><span><strong>Bill / Challan No.:</strong> {{$vendor_data->challan_no}}</span><span style="float:right"><strong>Form No.:</strong>{{$form_no}}</span></p>

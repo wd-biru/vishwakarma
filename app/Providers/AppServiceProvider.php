@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\IndentMaster;
+use App\Observers\IndentObserver;
 use Illuminate\Support\ServiceProvider;
 use Blade;
 
@@ -24,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('time', function ($expression) {
            return "<?php  echo date('H:i:s',strtotime($expression)); ?>";
         });
+
+
+        IndentMaster::observe(IndentObserver::class);
     }
 
     /**

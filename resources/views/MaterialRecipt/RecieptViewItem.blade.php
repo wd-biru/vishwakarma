@@ -7,7 +7,7 @@
         <div>
             <ul class="breadcrumb">     
                 <li><a href=""><i class="fa fa-home fa-lg"></i></a></li>
-                <li><a href="{{route('MaterialRecipt.index')}}">Material Receipt</a></li>
+                <li><a href="{{route('MaterialRecipt.index',$purchase_order_no)}}">Material Receipt</a></li>
                 <li><a href="{{route('MaterialRecipt.getMaterialRecieptItem')}}">Material Receipt Item</a></li>
             </ul>
         </div>

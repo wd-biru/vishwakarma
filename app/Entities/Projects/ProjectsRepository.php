@@ -4,6 +4,7 @@ namespace App\Entities\Projects;
 
 use App\Entities\BaseRepository;
 use App\Entities\Partners\Client;
+use App\Models\VishwaProjectStore;
 use DB;
 use ProjectStatus;
 use Auth;
@@ -76,7 +77,11 @@ class ProjectsRepository extends BaseRepository
 
     public function create($projectData)
     {
-        $projectData['project_value'] = $projectData['proposal_value'] ?: 0; 
+
+        $projectData['project_value'] = $projectData['proposal_value'] ?: 0;
+
+
+
         DB::beginTransaction();
 
         if (isset($projectData['client_id']) == false || $projectData['client_id'] == '') {
@@ -85,7 +90,18 @@ class ProjectsRepository extends BaseRepository
             // $projectData['portal_id'] = Auth::user()->getPortal->id;
         } 
 
-        $project = $this->storeArray($projectData); 
+        $project = $this->storeArray($projectData);
+
+        $abc=str_replace(' ','',$project->name);
+
+
+        $storeCreation=new VishwaProjectStore();
+
+        $storeCreation->portal_id=Auth::user()->getPortal->id;
+        $storeCreation->project_id=$project->id;
+        $storeCreation->store_name=$abc.'_store';
+        $storeCreation->save();
+
         DB::commit();
 
         return $project;

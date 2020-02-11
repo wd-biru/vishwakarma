@@ -26,12 +26,12 @@
 
 
 <form action="{{route('qualityCheck.index',$project->id)}}" method="get">
-    <input  class="datepicker" name="from_date" id="to_from_date" placeholder="From Date" value="@date($from_Date)" style="
+    <input  class="datepicker" autocomplete="off" name="from_date" id="to_from_date" placeholder="From Date" value="" style="
     font-size: 14px;" required>
-    <input  class="datepicker" name="to_date" id="to_to_date" placeholder="To Date" value="@date($to_Date)" style="
+    <input  class="datepicker" autocomplete="off" name="to_date" id="to_to_date" placeholder="To Date" value="" style="
     font-size: 14px;">
 
-    <button type="submit" class="btn btn-success">Submit</button>
+    <button type="submidatepickert" class="btn btn-success">Submit</button>
 
 </form>
 
@@ -126,6 +126,8 @@
                         <?php $i = 1;?>
                         @foreach($gateEntry as $value)
 
+
+
                             <tr class="tab-text-align">
                                 <td>{{$i++}}</td>
                                 <td>{{$value->challan_no}}</td>
@@ -144,13 +146,7 @@
                                             {{--</li>--}}
                                             <li><a href="{{route('qualityCheck.itemShow',[$project->id,$value->challan_no])}}"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;Show Items</a>
                                             </li>
-                                            <li>
-                                                {!! Form::model($project, ['route' => ['indentResorurce.getindentdata', $project->id], 'method' => 'post' ]) !!}
-                                                {{csrf_field()}}
-                                                <input type="hidden" name="unique_no" value="{{$value->indent_id}}">
-                                                <button type="submit" class="btn btn-link">View Vendor Price</button>
-                                                {!! Form::close() !!}
-                                            </li>
+
 
                                         </ul>
 
@@ -256,10 +252,19 @@
             placeholder: "Share Document With"
         });
 
-        $( function() {
-            $( "#to_from_date" ).datepicker();
+        $(document).ready( function() {
 
-            $( "#to_to_date" ).datepicker();
+            $('#to_from_date').datepicker({
+                format:"dd-mm-yyyy",
+                autoclose: true,
+                todayHighlight: true,
+            });
+            //
+            $('#to_to_date').datepicker({
+                format: 'dd-mm-yyyy',
+                autoclose: true,
+                todayHighlight: true,
+            });
         } );
 
     </script>

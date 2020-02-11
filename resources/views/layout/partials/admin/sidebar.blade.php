@@ -17,10 +17,22 @@
 
 
         <li><a href="{{route('department.master')}}"><i class="fa fa-gavel"></i>Department</a></li>
+        <li><a href="{{route('itemType.master')}}"><i class="fa fa-list"></i>Item Type</a></li>
         <li><a href="{{route('master.matMgmt')}}"><i class="fa fa-envelope"></i>Material Mangement</a></li>
         <li><a href="{{route('SrvcMgm.index')}}"><i class="fa fa-asterisk"></i>Services Management</a></li>
+        <li><a href="{{route('bankMaster.index')}}"><i class="fa fa-bank"></i><span>Bank Master</span></a></li>
+        <li><a href="{{route('masterBillingCycle.index')}}"><i class="fa fa-money"></i>Billing Cycle</a></li>
 
 
+    </ul>
+</li>
+
+<li class="treeview "><a href="#"><i class="fa fa-building"></i><span> Building Works</span><i class="fa fa-angle-right"></i></a>
+    <ul class="treeview-menu">
+        <li><a href="{{route('activityGroup.index')}}"><i class="fa fa-user"></i>Activity Group</a></li>
+        <li><a href="{{route('subActivity.index')}}"><i class="fa fa-user"></i>Sub Activity Work</a></li>
+        <li><a href="{{route('microAcivity.index')}}"><i class="fa fa-group"></i>Micro Activity Work</a></li>
+        <li><a href="{{route('manPower.index')}}"><i class="fa fa-users"></i>Man Power</a></li>
     </ul>
 </li>
 

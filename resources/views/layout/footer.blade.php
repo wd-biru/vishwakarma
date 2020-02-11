@@ -11,7 +11,7 @@
 <script src="{{ my_asset('js/dataTables.bootstrap.min.js')}}"></script>
 <script src="{{ my_asset('js/bootstrap.min.js')}}"></script>
 <script src="{{ my_asset('js/plugins/pace.min.js')}}"></script>
-<script src="{{ my_asset('js/dataTables.bootstrap.min.js')}}"></script>
+{{--<script src="{{ my_asset('js/dataTables.bootstrap.min.js')}}"></script>--}}
 <script src="{{ my_asset('js/dataTables.buttons.min.js')}}"></script>
 <script src="{{ my_asset('js/main.js')}}"></script>
 <script src="{{ my_asset('js/bootstrap-datepicker.js') }} "></script>
@@ -21,5 +21,6 @@
 <script src="{{ my_asset('js/ViewHelpers.js') }}"></script>
 <script src="{{ my_asset('js/CommonHelpers.js') }}"></script>
 <script src="{{ my_asset('js/select2.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
 <!--
 <script src="{{ my_asset('js/pmoJs/plugins/autoNumeric.min.js') }}"></script> -->

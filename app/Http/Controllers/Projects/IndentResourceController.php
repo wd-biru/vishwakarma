@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Projects;
 use App\Models\IndentItem;
 use App\Models\IndentMaster;
+use App\Models\VishwaPurchaseOrderItem;
 use App\Models\WorkFlowMaster;
 use App\Models\WorkflowPlace;
+use http\Exception;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MaterialItem;
@@ -23,6 +25,7 @@ use App\Models\IndentStatus;
 use App\Models\Portal;
 use Validator;
 use Carbon\Carbon;
+use App\Models\VishwaGroupType;
 use Log;
 use App\Models\MasterMaterialsGroup;
 use PDF;
@@ -58,6 +61,8 @@ class IndentResourceController extends Controller
                         ->select('vishwa_vendor_master.*','vishwa_portal_vendor_mapping.portal_id as PortalId')
                         ->get();
 
+
+
         return view('projects.estimate.index', compact('project', 'record','vendor_reg','VishwaVendorIndent'));
     }
 
@@ -67,7 +72,7 @@ class IndentResourceController extends Controller
     {
 
         $material_group = MasterMaterialsGroup::all();
-
+ $group_type = VishwaGroupType::all();
         if(Auth::user()->user_type=="employee"){
 
             $store_detail = VishwaProjectStore::join('vishwa_store_employee_mapping', 'vishwa_project_store.id','vishwa_store_employee_mapping.store_id')
@@ -81,7 +86,7 @@ class IndentResourceController extends Controller
 
 
 
-        return view('projects.estimate.addindent', compact('project', 'material_group','store_detail'));
+        return view('projects.estimate.addindent', compact('project', 'material_group','store_detail','group_type'));
     }
 
 
@@ -143,8 +148,11 @@ class IndentResourceController extends Controller
             $indentMaster->project_id = $project_id;
             $indentMaster->save();
 
+
             $workflow = Controller::getWorkFlow($indentMaster, 'Indent Flow');
+
             $transitions = $workflow->getEnabledTransitions($indentMaster);
+
             $workflow->apply($indentMaster, 'To_create');
 
             if ($indentMaster->save()) {
@@ -162,6 +170,9 @@ class IndentResourceController extends Controller
 
 
             }
+
+
+
 
             DB::commit();
         } catch (\Exception $e) {
@@ -443,7 +454,7 @@ class IndentResourceController extends Controller
        $chkPurchaseOrder = VishwaPurchaseOrder::where('indent_id', $indent_id)
             ->where('project_id', $project->id)->get();
 
-      
+
 
             // dd($indent_id , $indent ,$vendor_indent_mapping,$chkPurchaseOrder); 
 
@@ -454,18 +465,17 @@ class IndentResourceController extends Controller
     public function storePurchase(Project $project, Request $request)
     {
 
-
-
         $indent_id = $request->input('indent_id');
         $emp_id = Auth::user()->getPortal->id;
         $item_id = $request->input('item_id');
         $unit = $request->input('unit');
         $qty = $request->input('qty');
         $store_id = $request->input('store_id');
-        $voucher_no = $request->input('voucher_no');
+//        $voucher_no = $request->input('voucher_no');
         $purchase_order_no = $request->input('purchase_order_no');
         $vendor_id = $request->input('vendor_id');
-        $date = $request->input('date');
+        $date = $request->input('from_date');
+
 
 
         if (Auth::user()->user_type == "portal") {
@@ -478,7 +488,6 @@ class IndentResourceController extends Controller
             $portal_id= Auth::user()->getEmp->getUserPortal->id;
         }
 
-
         $total_amount = 0;
         $amount = 0;
         $tax = 0;
@@ -490,65 +499,95 @@ class IndentResourceController extends Controller
         foreach ($item_id as $key => $val) {
 
             $item_price = VishwaIndentVendorsPrice::where('vishwa_indent_vendor_price.indent_id', $indent_id)
+                ->join('vishwa_indent_vendor_rentable_price','vishwa_indent_vendor_price.id','vishwa_indent_vendor_rentable_price.indent_map_id')
                 ->where('vishwa_indent_vendor_price.vendor_id', $vendor_id)
-                ->where('vishwa_indent_vendor_price.item_id', $val)
+                ->where('vishwa_indent_vendor_rentable_price.item_id', $val)
                 ->first();
+
+            $item_price_2 = VishwaIndentVendorsPrice::where('vishwa_indent_vendor_price.indent_id', $indent_id)
+                    ->join('vishwa_indent_vendor_non_rentable_price','vishwa_indent_vendor_price.id','vishwa_indent_vendor_non_rentable_price.indent_map_id')
+                    ->where('vishwa_indent_vendor_price.vendor_id', $vendor_id)
+                    ->where('vishwa_indent_vendor_non_rentable_price.item_id', $val)
+                    ->first();
 
             if ($item_price != null) {
 
-                $amount = $qty[$key] * $item_price->price;
-                $final_amount = $final_amount + $amount;
-                $fright_charge = $item_price->freight + ($item_price->freight * 18) / 100;
-                $load_unload = 0 + $item_price->loading;
-                $kata_parchi = 0 + $item_price->kpcharges;
-                $tax = $tax + (($amount * $item_price->tax_rate) / 100);
-
+//                $amount = $qty[$key] * $item_price->price;
+//                $final_amount = $final_amount + $amount;
+//                $fright_charge = $item_price->freight + ($item_price->freight * 18) / 100;
+//                $load_unload = 0 + $item_price->loading;
+//                $kata_parchi = 0 + $item_price->kpcharges;
+//                $tax = $tax + (($amount * $item_price->tax_rate) / 100);
+//                $total_amount = $final_amount + $fright_charge + $load_unload + $kata_parchi + $tax;
             }
 
+            if ($item_price_2 != null) {
 
+                $amount = $qty[$key] * $item_price_2->price;
+                $final_amount = $final_amount + $amount;
+                $fright_charge = $item_price_2->freight + ($item_price_2->freight * 18) / 100;
+                $load_unload = 0 + $item_price_2->loading;
+                $kata_parchi = 0 + $item_price_2->kpcharges;
+                $tax = $tax + (($amount * $item_price_2->tax_rate) / 100);
+                $total_amount = $final_amount + $fright_charge + $load_unload + $kata_parchi + $tax;
+            }
         }
 
-        $total_amount = $final_amount + $fright_charge + $load_unload + $kata_parchi + $tax;
 
 
-        foreach ($item_id as $key => $value) {
-            if ($vendor_id != null) {
 
-                if($value==null) {
-                    $update = VishwaPurchaseOrder::where('indent_id', $indent_id)->delete();
-                }
-                else
-                {
-                    $update = VishwaPurchaseOrder::where('item_id', $value)->where('vendor_id', $vendor_id)->where('indent_id', $indent_id)->delete();
-                }
+        DB::beginTransaction();
 
+        try {
 
+            $updatePurchaseOrder = VishwaPurchaseOrder::where('vendor_id', $vendor_id)->where('indent_id', $indent_id)->first();
+
+            if ($updatePurchaseOrder != null) {
+
+                $updatePurchaseOrder->portal_id = $portal_id;
+                $updatePurchaseOrder->emp_id = $emp_id;
+                $updatePurchaseOrder->project_id = $project->id;
+                $updatePurchaseOrder->total_amount = $total_amount;
+                $updatePurchaseOrder->store_id = $store_id;
+                $updatePurchaseOrder->date = date('Y-m-d', strtotime($date));
+                $updatePurchaseOrder->purchase_order_no = $purchase_order_no;
+                $updatePurchaseOrder->save();
+
+            }
+            else
+            {
                 $VishwaIndentData = new VishwaPurchaseOrder();
                 $VishwaIndentData->vendor_id = $vendor_id;
                 $VishwaIndentData->portal_id = $portal_id;
                 $VishwaIndentData->emp_id = $emp_id;
                 $VishwaIndentData->project_id = $project->id;
                 $VishwaIndentData->indent_id = $indent_id;
-                $VishwaIndentData->total_amount = $total_amount;
-                $VishwaIndentData->item_id = $value;
-                $VishwaIndentData->voucher_no = $voucher_no;
                 $VishwaIndentData->store_id = $store_id;
-                $VishwaIndentData->unit = $unit[$key];
-                $VishwaIndentData->qty = $qty[$key];
-                $_dates = new Carbon(str_replace('/', '-', $date));
-                $date = date('Y-m-d', strtotime($_dates));
-                $VishwaIndentData->date = $date;
+                $VishwaIndentData->date = date('Y-m-d', strtotime($date));
                 $VishwaIndentData->purchase_order_no = $purchase_order_no;
                 $VishwaIndentData->save();
 
-            }  # code...
+            }
+            foreach ($item_id as $key => $value) {
+                if ($vendor_id != null) {
+                    $VishwaPurchaseData = new VishwaPurchaseOrderItem();
+                    $VishwaPurchaseData->order_map_id = $VishwaIndentData->id;
+                    $VishwaPurchaseData->total_amount = $total_amount;
+                    $VishwaPurchaseData->item_id = $value;
+                    $VishwaPurchaseData->unit = $unit[$key];
+                    $VishwaPurchaseData->qty = $qty[$key];
+                    $VishwaPurchaseData->save();
+                }
+            }
+
+            DB::commit();
+            Session::flash('success_message', 'PO Request Successfully Generated Go to The Purchase order Tabs!');
+        } catch (Exception $e) {
+            DB::rollback();
+            Session::flash('error_message', 'PO Request Failed Due to Error in Data !');
         }
 
-
-        $purchaseData=VishwaPurchaseOrder::where('indent_id',$indent_id)->first();
-        $workflow = Controller::getPoWorkFlow($purchaseData, 'Po Flow');
-        $purchaseData->toCheckStage($workflow, $purchaseData);
-        $purchaseData->toChangeStage($workflow, $purchaseData);
+            return redirect()->route('indentResorurce.index', $project->id);
 
 
 //        $indent = $request->input('indent_no');
@@ -594,8 +633,7 @@ class IndentResourceController extends Controller
 //        return redirect()->route('indentResorurce.index',[$project->id]);
 //
 
-        Session::flash('success_message', 'PO Request Successfully Generated Go to The Purchase order Tabs!');
-        return redirect()->route('indentResorurce.index', $project->id);
+
 
     }
 
@@ -690,7 +728,6 @@ class IndentResourceController extends Controller
 
 
         $indentNewdata=IndentMaster::where('id', $indentdata->id)->first();
-//        dd($indentNewdata->current_status);
 
        if ($indentNewdata->current_status==Null) {
 
@@ -719,6 +756,16 @@ class IndentResourceController extends Controller
        }
         return redirect()->route('indentResorurce.index',[$project->id]);
     }
+
+
+public function getMaterialGroup(Request $request)
+{
+
+    $material_groups = DB::table("vishwa_master_material_group")
+                      ->where("group_type_id",$request->input('group_type_id'))
+                      ->pluck("group_name","id");
+    return response()->json($material_groups);
+}
 
 
 

@@ -78,6 +78,8 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
             Route::get('/{id}/vendors', 'PortalManagement@Getvendoritem')->name('Getvendoritem');
 
 
+
+
             Route::post('/portalEmpStore/{id}', 'PortalManagement@EmpStore')->name('portalEmpStore');
 
             //select portal services
@@ -144,6 +146,80 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
                 Route::get('/checkUniquedesignation', 'DepartmentController@checkUniquedesignation')->name('checkUniquedesignation.department.master');
             });
 
+            //admin/material configuration
+            // Start Material Config Route is created by Prem Chand //
+            Route::group(['namespace' => 'matConfig', 'prefix' => 'matConfig'], function () {
+
+                Route::get('/', 'MaterialConfigurationController@index')->name('matConfig.master');
+
+                Route::get('/editFormulae/{id}/{item_id}', 'MaterialConfigurationController@editFormulae')->name('editFormulae');
+                Route::post('/store', 'MaterialConfigurationController@store')->name('matConfigStore');
+                Route::post('/updateMaterialConfig', 'MaterialConfigurationController@updateMaterialConfigItem')->name('updateMaterialConfigItem');
+                Route::post('/UpdateFormulae', 'MaterialConfigurationController@UpdateFormulae')->name('UpdateFormulae');
+                Route::get('/deleteConfig/{id}', 'MaterialConfigurationController@deleteConfig')->name('deleteConfig');
+                Route::get('/deleteFormulae/{id}', 'MaterialConfigurationController@deleteFormulae')->name('deleteFormulae');
+
+            });
+
+            // End Material Config Route is created by Prem Chand //
+
+
+// item group master
+            Route::group(['namespace' => 'itemType', 'prefix' => 'itemType'], function () {
+
+                Route::get('/', 'ItemTypeController@index')->name('itemType.master');
+                Route::post('/store', 'ItemTypeController@store')->name('storeItemType');
+                Route::get('/edit/{id}', 'ItemTypeController@edit')->name('itemTypeEdit');
+                Route::post('/itemTypeUpdate/', 'ItemTypeController@Update')->name('itemTypeUpdate');
+
+                Route::get('/delete/{id}', 'ItemTypeController@delete')->name('itemTypeDelete');
+
+                Route::post('/getGroups', 'ItemTypeController@getGroups')->name('getGroups');
+
+            });
+
+            Route::group(['namespace' => 'BankMaster'], function () {
+                Route::get('/city', 'bankmastercontroller@getcityname')->name('cityName.fetch');
+                Route::get('/state', 'bankmastercontroller@getstatename')->name('statename.fetch');
+                Route::get('/country', 'bankmastercontroller@getcountryname')->name('countryname.fetch');
+                Route::get('/bankDelete/{id}', 'BankMasterController@bankDelete')->name('bankDelete');
+                Route::resource('bankMaster', 'BankMasterController');
+
+            });
+            Route::group(['namespace' => 'AccountMaster'], function () {
+                Route::resource('masterBillingCycle', 'AccountMasterController')->only([
+                    'index', 'store'
+                ]);
+                Route::post('/', 'AccountMasterController@updateBillingCycle')->name('masterBillingCycleUpdate');
+                Route::get('/billingCycleDelete/{id}', 'AccountMasterController@deleteBillingCycle')->name('billingCycleDelete');
+            });
+
+            Route::group(['namespace' => 'ActivityGroup'], function () {
+
+                Route::get('/activity', 'ActivityGroupController@index')->name('activityGroup.index');
+                Route::post('/activityStore', 'ActivityGroupController@store')->name('activityGroup.store');
+                Route::get('/activityCreate', 'ActivityGroupController@create')->name('activityGroup.create');
+                Route::get('/editActivity/{id}', 'ActivityGroupController@edit')->name('activityGroup.edit');
+                Route::get('/deleteActivity/{id}', 'ActivityGroupController@delete')->name('activityGroup.delete');
+                Route::post('/updateActivityGroup/{id}', 'ActivityGroupController@update')->name('activityGroup.update');
+
+                Route::get('/subactivity', 'SubActivityWorkController@index')->name('subActivity.index');
+                Route::post('/subactivityStore', 'SubActivityWorkController@store')->name('subActivity.store');
+                Route::get('/subactivityCreate', 'SubActivityWorkController@create')->name('subActivity.create');
+                Route::get('/subactivityEdit/{id}', 'SubActivityWorkController@edit')->name('subActivity.edit');
+                Route::get('/subactivityDelete/{id}', 'SubActivityWorkController@delete')->name('subActivity.delete');
+                Route::post('/subactivityUpdate/{id}', 'SubActivityWorkController@update')->name('subActivity.update');
+
+                Route::resource('microAcivity', 'MicroActivityWorkController');
+                Route::get('/getSubActivity', 'MicroActivityWorkController@getSubActivity')->name('getSubActivity');
+                Route::get('/microAcivityDelete/{id}', 'MicroActivityWorkController@deleteMicroActivity')->name('microAcivity.delete');
+
+                Route::resource('manPower', 'ManPowerController');
+                Route::get('/manPowerDelete/{id}', 'ManPowerController@deleteManPower')->name('manPower.delete');
+
+            });
+
+
         });
 
     });
@@ -176,6 +252,7 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
         Route::get('projects/{project}/estimate', ['as' => 'projects.estimation.index', 'uses' => 'EstimateController@index']);
         Route::get('projects/{project}/store/create', ['as' => 'projects.store.create', 'uses' => 'StoreController@create']);
 
+
         Route::group(['prefix' => 'projects'], function () {
 
             Route::post('/getmatirialitem', 'EstimateController@Getmaterialitem')->name('estimate.getmatirialitem');
@@ -192,6 +269,13 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
 //            Route::resource('/{project}/indentResorurce','IndentResourceController');
             Route::get('/{project}/indentResorurce', 'IndentResourceController@index')->name('indentResorurce.index');
             Route::post('/{project}/getItems', 'IndentResourceController@getItemList')->name('getItemList');
+
+// route by mohit
+
+            Route::post('/getMaterialGroup', 'IndentResourceController@getMaterialGroup')->name('getMaterialGroup');
+
+// route end by mohit
+
             Route::post('/{project}/deleteItem', 'IndentResourceController@deleteIndentItem')->name('indentResorurce.delete');
             Route::post('/{project}/geteditItems', 'IndentResourceController@getItemListIndent')->name('indentResorurce.chkItem');
             Route::get('projects/{project}/addindent', ['as' => 'indentResorurce.addindent', 'uses' => 'IndentResourceController@Addindent']);
@@ -264,12 +348,22 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
             Route::get('/{project}/getgodownitem/{store}', 'StoreController@getgodownItem')->name('getgodownItem');
             Route::get('{project}/chkitem-inprimary/{store}', 'StoreController@checkItemInPrimary')->name('checkItemInPrigodown');
 
+
+            /***************************************NewStoreRoutes**********************************/
+            Route::get('/{project}/getStoreChallanDetails','StoreController@getStoreChallanDetails')->name('getStoreChallanDetails');
+            Route::get('/{project}/getMRequestDetails','StoreController@getMRequestDetails')->name('getMRequestDetails');
+            Route::get('/{project}/populateItemDetails','StoreController@populateItemDetails')->name('populateItemDetails');
+            Route::get('/{project}/populateReqDetails','StoreController@populateReqDetails')->name('populateReqDetails');
+            /*******************************************END****************************************/
+
+
+
 //           /**************************Godown TranserController*********************/
 //
-//            Route::get('{project}/itemdeletelist/{store}', 'GodowntransferController@Itemlistdel')->name('godownItemdeletelist');
-//            Route::get('getgodownitemlist', 'GodowntransferController@getgodownItemlist')->name('getgodownItemlist');
-//            Route::get('godowntransfer', 'GodowntransferController@index')->name('godowntransfer');
-//            Route::post('setsecondary', 'GodowntransferController@getsecondaryname')->name('setsecondary');
+            Route::get('{project}/itemdeletelist/{store}', 'GodowntransferController@Itemlistdel')->name('godownItemdeletelist');
+            Route::get('getgodownitemlist', 'GodowntransferController@getgodownItemlist')->name('getgodownItemlist');
+            Route::get('godowntransfer', 'GodowntransferController@index')->name('godowntransfer');
+            Route::post('setsecondary', 'GodowntransferController@getsecondaryname')->name('setsecondary');
 //
 //
 //            /**************************End Godown TranserController*********************/
@@ -284,17 +378,19 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
             Route::get('/Tower/{project}/DetailStore', 'Towercontroller@DetailStore')->name('Tower.DetailStore');
 
 
+
+
+
             /*************************** End Tower Module ****************************/
 
         });
 
         /*******************************Quality Check********************************/
+        Route::get('/projects/{project}/itemShowCheck/{challan_no}', 'QualityCheckController@itemShow')->name('qualityCheck.itemShow');
+        Route::resource('/projects/{project}/qualityCheck', 'QualityCheckController');
 
-        Route::resource('/projects/{project}/qualityCheck','QualityCheckController');
-        Route::get('/projects/{project}/itemShowCheck/{challan_no}','QualityCheckController@itemShow')->name('qualityCheck.itemShow');
 
         /******************************End Q Check *********************************/
-
 
 
         Route::resource('/projects/{project}/allocation', 'AllocationResource');
@@ -304,7 +400,7 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
         Route::post('projects/{project}/store', 'AllocationResource@store')->name('allocation.store');
         Route::get('projects/{project}/destroy/{id}', 'AllocationResource@destroy')->name('allocationDelete');
         Route::post('/projects/{project}/save', 'storecontroller@store')->name('store.save');
-        Route::post('/projects/{project}/update', 'storecontroller@storeUpdate')->name('store.update');
+        Route::post('/projects/{project}/storeupdate', 'storecontroller@storeUpdate')->name('store.update');
         Route::get('/projects/{project}/store', 'StoreController@index')->name('store.index');
 
 
@@ -331,6 +427,19 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
         Route::post('jobs/{id}/tasks-reorder', ['as' => 'jobs.tasks-reorder', 'uses' => 'JobsController@tasksReorder']);
     });
 
+    Route::group(['namespace' => 'Projects'], function () {
+
+        Route::get('projects/{project}/agreement', ['as' => 'projects.agreement.index', 'uses' => 'AgreementController@index']);
+        Route::get('projects/{project}/addAgreement', ['as' => 'agreementResource.addagreement', 'uses' => 'AgreementController@Addagreement']);
+        Route::post('projects/{project}/store', ['as' => 'agreementResorurce.store', 'uses' => 'AgreementController@store']);
+        Route::post('projects/{project}/update', ['as' => 'agreementResorurce.update', 'uses' => 'AgreementController@updateAgreement']);
+        Route::get('projects/delete/{id}', 'AgreementController@deleteAgreement')->name('deleteAgreement');
+        Route::get('projects/{project}/viewAgreementAs', 'AgreementController@viewAgreement')->name('agreementResorurce.viewAgreement');
+        Route::get('projects/{project}/uploadAgreementsAs', 'AgreementController@uploadagreement')->name('agreementResource.uploadAgreement');
+        Route::post('projects/{project}/dropZoneStore', 'Agreementcontroller@dropzonestore')->name('dropzone.store');
+
+    });
+
 
     /***************** PORTAL MODULE *****************/
     Route::group(['namespace' => 'portal', 'prefix' => 'portal'], function () {
@@ -341,8 +450,27 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
         Route::get('/vendorGetCode', 'DashboardPortal@vendorGetCode')->name('vendorGetCode');
         Route::post('/Profile/Update', 'DashboardPortal@update')->name('portal.profile.update');
 
+        Route::get('/notifications', 'DashboardPortal@notifications')->name('getNotification');
+        //Accounts
+        Route::group(['namespace' => 'Accounts', 'prefix' => 'account'], function () {
+            Route::get('/billingCycle', 'AccountController@billingCycle')->name('portal.billingCycle');
+            Route::get('/billingCycle/create', 'AccountController@billingCycleCreate')->name('billingCycle.create');
+            Route::post('/billingCycle/store', 'AccountController@billingCycleStore')->name('billingCycle.store');
+            Route::get('/getBillCycle', 'AccountController@getBillCycleWithPortalNull')->name('getBillCycleWithPortalNull');
+            Route::post('/billingCycle/update', 'AccountController@billingCycleUpdate')->name('billingCycle.update');
+        });
+        //end
+
         //portal/config
         Route::get('outletconfig', 'OutletController@index')->name('outlet.config');
+
+        //master Store Details //
+        Route::get('/masterStore', 'DashboardPortal@masterStore')->name('masterStore.index');
+        Route::get('/viewStoreItems/{id}', 'DashboardPortal@storeItemDetails')->name('masterStore.viewItems');
+        Route::get('/viewStoreItemsDetails/', 'DashboardPortal@getStoreItemList')->name('masterStore.getItemList');
+        Route::get('/filterItemStore/', 'DashboardPortal@filterItemStore')->name('masterStore.filterItemStore');
+        Route::get('/viewFilterItemDetails/', 'DashboardPortal@filterItemStoreList')->name('masterStore.getFilterItemList');
+        Route::get('/getMaterialGroupItem', 'DashboardPortal@getMaterialGroupItem')->name('getMaterialGroupItem');
 
         // portal/company
         Route::group(['prefix' => 'company', 'namespace' => 'company'], function () {
@@ -447,6 +575,24 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
             Route::get('/employee/Sheet', 'TimeSheetController@employeeIndex')->name('portal.employee.timeSheet');
         });
 
+        //bankAccount
+
+        Route::group(['prefix' => 'bankAccount', 'namespace' => 'bankAccount'], function () {
+            Route::get('/bankAccount', 'BankAccountController@index')->name('portal.bankAccount');
+            Route::get('/bankAccountCreate', 'BankAccountController@create')->name('portal.bankAccount.create');
+            Route::post('/bankAccountStore', 'BankAccountController@store')->name('portal.bankAccount.store');
+
+        });
+        Route::group(['prefix' => 'masterLedger', 'namespace' => 'masterLedger'], function () {
+            Route::get('/masterLedger', 'MasterLedgerController@index')->name('masterLedger.index');
+            Route::get('/masterLedgerCreate', 'MasterLedgerController@create')->name('masterLedger.create');
+            Route::get('/getClientListData', 'MasterLedgerController@getClientListData')->name('getClientListData');
+            Route::post('/masterLedgerStore', 'MasterLedgerController@store')->name('masterLedger.store');
+            Route::get('/{id}/masterLedgerEdit', 'MasterLedgerController@edit')->name('masterLedger.edit');
+            Route::get('/{id}/masterLedgerDelete', 'MasterLedgerController@destroy')->name('masterLedger.delete');
+
+        });
+
 
     });
 
@@ -459,15 +605,20 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
         route::get('/dashboard', 'DashboardVendor@index')->name('vendor.dashboard');
         Route::get('/Profile', 'DashboardVendor@show')->name('vendor.profile');
         Route::post('/Profile/Update', 'DashboardVendor@update')->name('vendor.profile.update');
+
         Route::group(['prefix' => 'VendorPrice'], function () {
             Route::get('/', 'VendorPriceController@index')->name('vendorPrice');
-            Route::get('/vendorIndent', 'VendorPriceController@vedorIndent')->name('vedorIndent');
+            Route::get('/vendorIndent', 'VendorPriceController@vendorIndent')->name('vedorIndent');
             Route::get('/{id}/IndentPrice', 'VendorPriceController@vendorIndentPrice')->name('vendorIndentPrice');
             Route::post('/getItems', 'VendorPriceController@getItemListPrice')->name('getItemListPrice');
             Route::get('/getEachVendorPrice', 'VendorPriceController@getEachVendorPrice')->name('getEachVendorPrice');
             Route::post('/', 'VendorPriceController@storeprice')->name('item.price.store');
             Route::post('/storeIndentyPrice', 'VendorPriceController@storeIndentyPrice')->name('storeIndentyPrice');
+            Route::post('/rentableQuotes', 'VendorPriceController@rentableQuotes')->name('rentableQuotes');
             Route::post('vendorgenerate-pdf', 'VendorPriceController@vendorgeneratePDF')->name('vendorgeneratePDF');
+            Route::get('/{id}/createContract', 'VendorPriceController@createContract')->name('createContract');
+            Route::post('/storeContract', 'VendorContractPriceController@storeRentableContract')->name('storeRentableContract');
+
         });
     });
 
@@ -480,6 +631,7 @@ Route::group(['middleware' => ['auth', 'check_role']], function () {
         Route::get('/Dashboard', 'DashboardEmployee@index')->name('employee.dashboard');
         Route::get('/Profile', 'DashboardEmployee@show')->name('employee.profile');
         Route::post('/Profile/Update/{id}', 'DashboardEmployee@update')->name('employee.profile.update');
+        Route::get('/getNotifications', 'DashboardEmployee@getNotifications')->name('getEmpNotification');
 
         //employee/social
         Route::group(['prefix' => 'otherDetails', 'namespace' => 'Others'], function () {
@@ -558,7 +710,12 @@ Route::group(['middleware' => ['auth', 'Config']], function () {
 
         });
 
+
+
+
     });
+
+
 
 
     /**************************** master vendor Registration  **************************/
@@ -609,26 +766,21 @@ Route::group(['middleware' => ['auth']], function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'Purchase', 'namespace' => 'Purchase'], function () {
         Route::get('/', 'PurchaseOrderController@index')->name('PurchaseOrder.index');
-        Route::post('/getPurchaseData', 'PurchaseOrderController@getPurchaseData')->name('PurchaseOrder.getPurchaseData');
-        Route::post('/getPurchaseDataNew', 'PurchaseOrderController@getPurchaseDataNew')->name('PurchaseOrder.getPurchaseDataNew');
+        Route::get('/getPurchaseData', 'PurchaseOrderController@getPurchaseData')->name('PurchaseOrder.getPurchaseData');
         Route::post('/getChallanQuantity', 'PurchaseOrderController@getChallanQuantity')->name('PurchaseOrder.getChallanQuantity');
-        Route::post('/getChallanDataItems', 'PurchaseOrderController@getChallanData')->name('getChallanData');
+        Route::get('/getChallanData', 'PurchaseOrderController@getChallanData')->name('getChallanData');
         Route::post('/getPurchaseItem', 'PurchaseOrderController@getPurchaseItem')->name('getPurchaseItem');
         Route::post('/ChallanItemGet', 'PurchaseOrderController@ChallanItemGet')->name('ChallanItemGet');
         Route::get('/getChallanindex', 'PurchaseOrderController@getChallanindex')->name('getChallanindex');
         Route::post('/vendorChallan', 'PurchaseOrderController@vendorChallan')->name('vendorChallan');
-         Route::post('/vendorBill', 'PurchaseOrderController@vendorBill')->name('vendorBill');
-
+        Route::get('/vendorBill/{id}/{order_no}', 'PurchaseOrderController@vendorBill')->name('vendorBill');
         Route::get('/getChallanBased', 'PurchaseOrderController@getOrderBasedChallan')->name('getChallanBased');
-        // Route::get('/ChallanDataFetch', 'PurchaseOrderController@getOrderBasedChallan')->name('ChallanDataFetch');
-        
-        
-
+        Route::get('/vendorbillPdfDownload', 'PurchaseOrderController@vendorBillPdfDownload')->name('billPdf');
+        Route::get('/getBillBased', 'PurchaseOrderController@getOrderBasedBill')->name('getBillBased');
+        Route::post( '/billOrderNumber', 'PurchaseOrderController@billOrderNumber')->name('billOrderNumber');
         Route::match(['get', 'post'], '/ChallanViewAndDownloadPDF', 'PurchaseOrderController@ChallanViewAndDownloadPDF')->name('ChallanViewAndDownloadPDF');
         Route::match(['get', 'post'], '/ChallanOrderNumber', 'PurchaseOrderController@ChallanOrderNumber')->name('ChallanOrderNumber');
         Route::match(['get', 'post'], '/ViewAndDownloadPDF', 'PurchaseOrderController@ViewAndDownloadPDF')->name('PurchaseOrder.ViewAndDownloadPDF');
-
-
 
     });
 });
@@ -640,19 +792,41 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'MaterialRecipt', 'namespace' => 'MaterialRecipt'], function () {
-        Route::get('/', 'MaterialReciptController@index')->name('MaterialRecipt.index');
+        Route::get('/genBill/{id}', 'MaterialReciptController@index')->name('MaterialRecipt.index');
+        Route::get('/pmVerify/', 'MaterialReciptController@pmVerify')->name('MaterialRecipt.pmVerify');
+        Route::get('/getChallanlist', 'MaterialReciptController@getChallanList')->name('MaterialRecipt.challan_list');
         Route::get('/getStore', 'MaterialReciptController@getStore')->name('MaterialRecipt.getStore');
         Route::get('/getvendor', 'MaterialReciptController@getvendor')->name('MaterialRecipt.getvendor');
         Route::get('/getChallan', 'MaterialReciptController@getChallan')->name('MaterialRecipt.getChallan');
         Route::post('/getChallanItem', 'MaterialReciptController@getChallanItem')->name('MaterialRecipt.getChallanItem');
         Route::post('/StoreToInward', 'MaterialReciptController@StoreToInward')->name('MaterialRecipt.StoreToInward');
+        Route::post('/verifyByProjectManager', 'MaterialReciptController@verifyByProjectManager')->name('MaterialRecipt.verifyByProjectManager');
         Route::get('/ReciptView', 'MaterialReciptController@ReciptView')->name('MaterialRecipt.ReciptView');
         Route::get('/MaterialRecieptData', 'MaterialReciptController@MaterialRecieptData')->name('MaterialRecipt.MaterialRecieptData');
         Route::post('/MaterialRecieptItem', 'MaterialReciptController@getMaterialRecieptItem')->name('MaterialRecipt.getMaterialRecieptItem');
         Route::post('/DownloadMaterialReciept', 'MaterialReciptController@DownloadMaterialReciept')->name('MaterialRecipt.DownloadMaterialReciept');
 
+        
+
 
     });
+
+    ##################################### Material Request Routes #############################################
+
+    Route::group(['prefix'=>'MaterialRequest','namespace'=>'MaterialRequest'],function() {
+
+        route::get('/materialRequest', 'materialrequestcontroller@index')->name('materialRequest.index');
+        Route::get('/getStoreName', 'MaterialRequestController@getStoreNameByProject')->name('getStoreNameByProject');
+        Route::get('/autoComplete/fetch', 'materialrequestcontroller@fetch')->name('autoComplete.fetch');
+        Route::get('/getMaterialItemList', 'MaterialRequestController@getMaterialItemList')->name('getMaterialItemList');
+        Route::post('/materialRequestStore', 'MaterialRequestController@materialRequestStore')->name('materialRequestStore');
+        Route::get('/create','MaterialRequestController@create')->name('materialRequest.create');
+        Route::get('/requestShow/{id}','MaterialRequestController@show')->name('materialRequestShow');
+        Route::get('/requestApprovalShow/{id}','MaterialRequestController@approvalShow')->name('materialRequestApprovalShow');
+        Route::post('/changeRequestStatus/','MaterialRequestController@changeRequestStatus')->name('material.change.status');
+    });
+
+    ##################################### END Material Request Routes #############################################
 });
 
 /***************** Material Recipt end ****************/
@@ -660,42 +834,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 
-         Route::get('/activity', 'ActivityGroups\ActivityGroupController@index');
-         Route::post('/activityStore', 'ActivityGroups\ActivityGroupController@Store');
-         Route::get('/activityShow', 'ActivityGroups\ActivityGroupController@activityShow');
-         Route::get('/editActivity/{id}', 'ActivityGroups\ActivityGroupController@editActivity');
-         Route::get('/deleteActivity/{id}', 'ActivityGroups\ActivityGroupController@deleteActivity');
-         Route::post('/updateActivityGroup', 'ActivityGroups\ActivityGroupController@updateActivityGroup');
 
 
 
-         Route::get('/subactivityworks', 'ActivityGroups\SubWorksController@index');
-         Route::post('/subactivityworksStore', 'ActivityGroups\SubWorksController@subactivityworksStore');
-         Route::get('/subactivityworksShow', 'ActivityGroups\SubWorksController@subactivityworksShow');
-         Route::get('/subactivityworksEdit/{id}', 'ActivityGroups\SubWorksController@subactivityworksEdit');
-         Route::get('/subactivityworksDelete/{id}', 'ActivityGroups\SubWorksController@subactivityworksDelete');
-         Route::post('/subactivityworksUpdate', 'ActivityGroups\SubWorksController@subactivityworksUpdate');
-
-
-         Route::get('/manPower', 'ActivityGroups\ManPowerController@index');
-         Route::post('/manPowerStore', 'ActivityGroups\ManPowerController@manPowerStore');
-         Route::get('/manPowerShow', 'ActivityGroups\ManPowerController@manPowerShow');
-         Route::get('/manPowerEdit/{id}', 'ActivityGroups\ManPowerController@manPowerEdit');
-         Route::get('/manPowerDelete/{id}', 'ActivityGroups\ManPowerController@manPowerDelete');
-         Route::post('/manPowerUpdate', 'ActivityGroups\ManPowerController@manPowerUpdate');
-
-
-         Route::get('/microactivityworks', 'ActivityGroups\MicroWorksController@index');
-         Route::post('/microactivityworksStore', 'ActivityGroups\MicroWorksController@microactivityworksStore');
-         Route::get('/microactivityworksShow', 'ActivityGroups\MicroWorksController@microactivityworksShow');
-         Route::get('/microactivityworksEdit/{id}', 'ActivityGroups\MicroWorksController@microactivityworksEdit');
-         Route::get('/microactivityworksDelete/{id}', 'ActivityGroups\MicroWorksController@microactivityworksDelete');
-         Route::post('/microactivityworksUpdate', 'ActivityGroups\MicroWorksController@microactivityworksUpdate');
-
-         Route::get('/subactivityworksList','ActivityGroups\MicroWorksController@subactivityworksList');
-
-
-       
 
 
 

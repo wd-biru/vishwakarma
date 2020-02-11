@@ -59,7 +59,7 @@
                         <tr>
                             <td>{{$i++}}</td>
                             <td>{{$result->material_name}}</td>
-                            <td>{{$result->material_unit}}</td>
+                            <td>{{$result->unit}}</td>
                             <td>{{$result->qty}}</td>
                         </tr>  
                         @endforeach

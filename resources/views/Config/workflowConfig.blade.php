@@ -69,11 +69,17 @@
                         <div class="modal-body">
 
                             <div class="form-group">
-                                <label class="control-label col-sm-3" for="pwd">WORKFLOW Name<span
+                                <label class="control-label col-sm-4" for="pwd">Workflow Name<span
                                             style="color:red"> *</span></label>
                                 <div class="col-sm-8">
-                                    <input type="text" id="name" class="form-control check_value_ea check_name_ea"
-                                           name="name" placeholder="Field Name" required/><br>
+                                    {{--<input type="text" id="name" class="form-control check_value_ea check_name_ea"--}}
+                                           {{--name="name" placeholder="Field Name" required/><br>--}}
+                                    <select name="name" class="form-control ">
+                                        <option value="">Select Workflow Group</option>
+                                        @foreach($workFlows_name as $flow)
+                                            <option value="{{$flow->id}}">{{$flow->name}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>

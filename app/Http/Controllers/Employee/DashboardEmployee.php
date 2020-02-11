@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Employee;
 
-use App\Http\Controllers\Controller; 
+use App\Entities\Projects\Project;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EmployeeProfile;
 use App\User;
@@ -57,9 +58,10 @@ class DashboardEmployee extends Controller
         $project_count = count($jobs);
         
         $clients = Client::where('portal_id',Auth::user()->getEmp->portal_id)->get();
-      
 
-        return view('employee.dashboard',compact('leave_data','total_leave_notification','apply_leave_count','request_leave_count','project_count','jobs_count','count_on_jobs','clients'));
+        $project_list=Project::where('portal_id',$EmpData->portal_id)
+            ->get();
+        return view('employee.dashboard',compact('project_list','leave_data','total_leave_notification','apply_leave_count','request_leave_count','project_count','jobs_count','count_on_jobs','clients'));
     }
 
     /**
@@ -71,6 +73,12 @@ class DashboardEmployee extends Controller
     {
         //
     }
+
+    public function getNotifications()
+    {
+        return auth()->user()->unreadNotifications()->limit(5)->get()->toArray();
+    }
+
 
     /**
      * Store a newly created resource in storage.

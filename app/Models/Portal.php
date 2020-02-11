@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Portal extends Model
 {
     protected $table = 'vishwa_portals';
+    use SoftDeletes;
+    protected $dates = ['deleted_at'];
 
     public function getCompany()
     {

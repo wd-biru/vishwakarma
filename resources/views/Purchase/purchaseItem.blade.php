@@ -28,6 +28,25 @@
 
             <div class="col-md-12" style="margin-bottom: 2px;"> 
                @if(count($getChallanItem)> 0)
+
+                    <form action="{{route('PurchaseOrder.ViewAndDownloadPDF')}}"
+                          method="post">
+                        {{csrf_field()}}
+                        @foreach($getChallanItem as $list)
+                        <input type="hidden" name="purchase_order_no"
+                               value="{{$list->purchase_order_no}}">
+                        <input type="hidden" name="portal_id"
+                               value="{{$list->portal_id}}">
+                        <input type="hidden" name="indent_no"
+                               value="{{$list->indent_id}}">
+                        <input type="hidden" name="voucher_no"
+                               value="{{$list->voucher_no}}">
+                        <input type="hidden" name="vendor_id"
+                               value="{{$list->vendor_id}}">
+                        @endforeach
+                        <button type="submit" class="btn btn-link">Download PO</button>
+
+                    </form>
                 <form action="{{route('PurchaseOrder.getChallanQuantity')}}"  method="post">
                     {{csrf_field()}}
                         @foreach($getChallanItem as $list)
@@ -40,13 +59,14 @@
                         <button class="btn btn-primary" style="float: right;margin-bottom:2%; margin-top:2%!important;">View Challan Item</button>
                 </form>
 
+
                 @else
 
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <p><b>Vendor Not Challan Created Till Date</b></p>
+                                    <p><b>Vendor Challan Not Created Till Date</b></p>
                                 </div>
                             </div>
                         </div>
@@ -104,12 +124,12 @@
                         </tr>
                     </thead>
                     <tbody><?php $i=1;?>
-                         @foreach($items as $result)
 
+                         @foreach($items as $result)
                         <tr>
                             <td>{{$i++}}</td>
                             <td>{{$result->material_name}}</td>
-                            <td>{{$result->material_unit}}</td>
+                            <td>{{$result->unit}}</td>
                             <td>{{$result->qty}}</td>
                         </tr>  
                         @endforeach

@@ -142,17 +142,17 @@
 
                                 @foreach($vendorItem as $value)
 
-                                    <input type="hidden" name="emp_id" value="{{$value->emp_id}}">
+                                    <input type="hidden" name="emp_id" value="{{$emp_id}}">
                                     <input type="hidden" name="portal_id" value="{{$value->portal_id}}">
                                     <input type="hidden" name="project_id" value="{{$value->project_id}}">
                                     <input type="hidden" name="store_id" value="{{$value->store_id}}">
                                     <input type="hidden" name="indent_id" value="{{$value->indent_id}}">
                                     <input type="hidden" name="vendor_id" value="{{$value->vendor_id}}">
-                                    <input type="hidden" name="item_id" value="{{$value->item_id}}">
-                                    <input type="hidden" name="unit" value="{{$value->unit}}">
-                                    <input type="hidden" name="qty" value="{{$value->qty}}">
+                                    <input type="hidden" name="item_id[]" value="{{$value->item_id}}">
+                                    <input type="hidden" name="unit[]" value="{{$value->unit}}">
+                                    <input type="hidden" name="qty[]" value="{{$value->qty}}">
                                     <input type="hidden" name="qc_date" value="{{\Carbon\Carbon::now()}}">
-                                    <input type="hidden" name="challan_no" value="">
+                                    <input type="hidden" name="challan_no" value="{{$challan_no}}">
                                     <input type="hidden" name="purchase_order_no" value="{{$value->purchase_order_no}}">
                                     <input type="hidden" name="driver_name" value="{{$gateEntryChallan->driver_name}}">
                                     <input type="hidden" name="driver_mobile" value="{{$gateEntryChallan->driver_mobile}}">
@@ -162,15 +162,25 @@
                                         <td style="text-align:center;">{{$value->material_name}}</td>
                                         <td style="text-align:center;">{{$value->unit}}</td>
                                         <td style="text-align:center;">{{$value->qty}} </td>
-                                        <td style="text-align:center;"><input type="text" name="as_per_vendor" value=""
-                                                                              id="as_per_vendor_id" @if($flag==0)disabled @endif></td>
-                                        <td style="text-align:center;"><input type="text" name="as_per_system" value=""
+                                        <td style="text-align:center;"><input type="text" name="as_per_vendor[]"
+                                                                              id="as_per_vendor_id" @if($flag==0) value="{{$value->qty}}" readonly @else value="" @endif></td>
+                                        <td style="text-align:center;"><input type="text" name="as_per_system[]"
+                                                                             @foreach($qcCheckedEntry as $qc)
+                                                                             @if($qc->item_id==$value->item_id)
+                                                                             value="{{$qc->as_per_system}}" readonly
+                                                                              @endif
+                                                                              @endforeach
                                                                               id="as_per_system_id"></td>
                                         {{--<td style="text-align:center;"><input type="checkbox" name="qc_status" value=""--}}
                                                                               {{--id="qc_status_c"></td>--}}
-                                        <td style="text-align:center;"><textarea name="qc_remarks"
+                                        <td style="text-align:center;"><textarea name="qc_remarks[]"
+                                                                                 @foreach($qcCheckedEntry as $qc)
+                                                                                 @if($qc->item_id==$value->item_id)
+                                                                                 value="{{$qc->remarks}}" readonly
+                                                                                 @endif
+                                                                                 @endforeach
                                                                                  id="qcheck_remarks"></textarea></td>
-                                       <td style="text-align:center;"> <select name="challan_bill">
+                                       <td style="text-align:center;"> <select name="challan_bill" disabled>
                                             <option value="challan">Challan</option>
                                             <option value="challan">Bill</option>
                                         </select>
@@ -181,7 +191,12 @@
                             @endif
                         </table>
 
+                        @if(($qcCheckedEntry->isNotEmpty()))
+                            <input type="submit" class="btn btn-info" style="margin-left:43%;" value="Checked" disabled>
+                            @else
+
                         <input type="submit" class="btn btn-info" style="margin-left:43%;">
+                            @endif
 
                     </div>
                 </div>
@@ -281,9 +296,19 @@
         });
 
         $(function () {
-            $("#to_from_date").datepicker();
+            $("#to_from_date").datepicker({
+                    format: "dd-mm-yyyy",
+                    autoclose: true,
+                    todayHighlight: true,
+                }
+            );
 
-            $("#to_to_date").datepicker();
+
+            $("#to_to_date").datepicker({
+                format: "dd-mm-yyyy",
+                autoclose: true,
+                todayHighlight: true,
+            });
         });
 
         jQuery('#qc_status_c').change(function () {

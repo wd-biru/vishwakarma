@@ -50,11 +50,12 @@
                                             <th>Material Name.</th>
                                             <th>Unit.</th>
                                             <th>Quantity.</th>
-                                            <th>Remeaning Quantity.</th>
+                                            <th>Remaining Quantity.</th>
 
                                         </tr>
                                     </thead>
                                     <tbody>  
+
 
                                         @foreach($getChallan as $list)
                                         <tr>

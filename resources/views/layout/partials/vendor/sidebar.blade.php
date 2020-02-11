@@ -9,7 +9,7 @@
 			</a></li>
 			<li><a href="{{route('getChallanindex')}}"><i class="fa fa-eye" aria-hidden="true"></i>View Challan Number
 			</a></li>
-			<li><a href="{{route('getChallanData')}}"><i class="fa fa-eye" aria-hidden="true"></i>View Bill Number
+			<li><a href="{{route('PurchaseOrder.index')}}"><i class="fa fa-eye" aria-hidden="true"></i>View Bill Number
 			</a></li>
 
 	    </ul>
